@@ -362,6 +362,7 @@ h1, h2, h3, .hero-title, .section-title {
 .site-footer { background: var(--dark-bg); color: #f5eadd; padding: 50px 0; margin-top: 8px; font-size: 0.9rem; font-weight: 500; border-top: 4px solid var(--primary-color); }
 
 /* АДАПТИВНОСТЬ ПОД СМАРТФОНЫ И ПЛАНШЕТЫ */
+/* АДАПТИВНОСТЬ ПОД СМАРТФОНЫ И ПЛАНШЕТЫ */
 @media (max-width: 1024px) {
     .products-grid { grid-template-columns: repeat(2, 1fr); gap: 25px; }
     .about-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -371,15 +372,53 @@ h1, h2, h3, .hero-title, .section-title {
     .article-sidebar { position: static; }
     .hero h1 { font-size: 2.6rem; }
 }
+
 @media (max-width: 768px) {
-    .header-wrap { flex-direction: column; gap: 15px; text-align: center; }
-    .main-nav { margin: 10px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .main-nav a { margin: 0 8px; }
+    /* 1. Отключаем "примагничивание" шапки, чтобы она уезжала вверх при скролле */
+    .site-header { 
+        position: relative; 
+        padding: 5px 0; 
+    }
+
+    /* 2. Логотип слева, иконки справа */
+    .header-wrap { 
+        flex-direction: row; 
+        flex-wrap: wrap; 
+        justify-content: space-between; 
+        padding: 10px 0; 
+        gap: 15px; 
+    }
+
+    /* 3. Чуть уменьшаем логотип */
+    .logo { font-size: 1.3rem; }
+    .logo-icon { font-size: 1.5rem; margin-right: 5px; }
+
+    /* 4. Прячем слова "Корзина" и "Избранное", оставляем только значки и цифры */
+    .action-text { display: none; }
+    .header-actions { display: flex; gap: 20px; align-items: center; }
+    .fav-widget { margin-right: 0 !important; } /* Убираем лишний отступ */
+
+    /* 5. Меню выстраиваем в аккуратную линию под логотипом */
+    .main-nav { 
+        width: 100%; 
+        display: flex; 
+        justify-content: space-between; 
+        margin: 0; 
+        padding-top: 10px;
+        border-top: 1px solid rgba(0,0,0,0.05); /* Легкая линия над меню */
+    }
+    .main-nav a { margin: 0; font-size: 0.9rem; }
+
+    /* Остальной мобильный дизайн */
     .products-grid { grid-template-columns: 1fr; }
     .product-actions { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 80px 0; }
     .hero h1 { font-size: 2.1rem; }
     .section-title { font-size: 2rem; }
     .article-content h1 { font-size: 2.2rem; }
+    
+    /* Делаем статистику на телефоне компактнее */
+    .about-stats-mini { justify-content: center; margin-left: 0 !important; }
 }
 
 /* =========================================
