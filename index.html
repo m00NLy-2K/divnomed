@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дивно Мёд — Натуральный кочевой мёд</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo">
+                
+                <span class="logo-text">Дивно Мёд</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html" class="active">Главная</a>
+                <a href="#catalog">Каталог</a>
+                <a href="about.html">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+            <div class="header-actions">
+                <div class="fav-widget" style="display: inline-block; margin-right: 15px; cursor: pointer;">
+                    <span class="widget-icon">♡</span> <span class="action-text">Избранное</span> (<span id="fav-count">0</span>)
+                </div>
+                <div class="cart-widget" id="cartWidget" style="display: inline-block; cursor: pointer;">
+                    <span class="widget-icon">☙</span> <span class="action-text">Корзина</span> (<span id="cart-count">0</span>)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Натуральный мёд с кочевой пасеки Юга России</h1>
+            <p>Бережно собираем чистейший мёд без термической обработки и сторонних добавок. Честный труд на пасеке с 1997 года.</p>
+            <div class="hero-buttons">
+                <a href="#catalog" class="btn btn-primary">Открыть каталог</a>
+                <a href="about.html" class="btn btn-secondary-outline">Наша история</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="catalog" class="catalog-section container">
+        <h2 class="section-title">Наш ассортимент</h2>
+        <p class="section-subtitle">Выберите свой сорт натурального зрелого мёда</p>
+        
+        <div class="catalog-filters" style="text-align: center; margin-bottom: 40px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+            <button class="btn filter-btn active" data-category="all">Все сорта</button>
+            <button class="btn filter-btn" data-category="classic">Классика</button>
+            <button class="btn filter-btn" data-category="premium">Премиум</button>
+            <button class="btn filter-btn" data-category="rare">Редкие сорта</button>
+        </div>
+
+        <div class="products-grid">
+            
+            <div class="product-card" data-category="premium" data-product-id="acacia">
+                <div class="product-image-area">
+                    <img src="images/acacia.jpg" alt="Мёд Акация" class="product-img">
+                </div>
+                <h3>Мёд Акация</h3>
+                <p class="product-desc">Тонкий деликатный вкус, рекордно долгая текучесть. Самый изысканный сорт для искушенных ценителей.</p>
+                
+                <a href="acacia.html" class="about-honey-link">Подробнее о пользе и свойствах сорта</a>
+                
+                <div class="weight-selector">
+                    <select class="format-select">
+                        <option value="550" data-weight="500 г">500 г — 550 ₽</option>
+                        <option value="1090" data-weight="1 кг" selected>1 кг — 1090 ₽</option>
+                        <option value="1550" data-weight="1.45 кг">1.45 кг — 1550 ₽</option>
+                    </select>
+                </div>
+                <div class="price-block"><span class="price"><span class="price-val">1090</span> ₽</span></div>
+                <div class="product-actions">
+                    <button class="btn btn-buy"><span class="btn-buy-label">В корзину</span></button>
+                    <button class="btn btn-one-click">1 клик</button>
+                    <button class="btn-favorite" title="Добавить в избранное" style="background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px; color: var(--primary-color);">♡</button>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="classic" data-product-id="donnik">
+                <div class="product-image-area">
+                    <img src="images/donn.jpg" alt="Мёд Донник" class="product-img">
+                </div>
+                <h3>Мёд Донник</h3>
+                <p class="product-desc">Удивительно мягкий, тающий сорт с легким, благородным оттенком натуральной ванили.</p>
+                
+                <a href="donnik.html" class="about-honey-link">Подробнее о пользе и свойствах сорта</a>
+                
+                <div class="weight-selector">
+                    <select class="format-select">
+                        <option value="420" data-weight="500 г">500 г — 420 ₽</option>
+                        <option value="790" data-weight="1 кг" selected>1 кг — 790 ₽</option>
+                    </select>
+                </div>
+                <div class="price-block"><span class="price"><span class="price-val">790</span> ₽</span></div>
+                <div class="product-actions">
+                    <button class="btn btn-buy"><span class="btn-buy-label">В корзину</span></button>
+                    <button class="btn btn-one-click">1 клик</button>
+                    <button class="btn-favorite" title="Добавить в избранное" style="background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px; color: var(--primary-color);">♡</button>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="classic" data-product-id="raznotravie">
+                <div class="product-image-area">
+                    <img src="images/raznotrav.jpg" alt="Мёд Разнотравье" class="product-img">
+                </div>
+                <h3>Мёд Разнотравье</h3>
+                <p class="product-desc">Глубокий природный коктейль степных дикоросов. Насыщенный аромат южного лугового лета.</p>
+                
+                <a href="raznotravie.html" class="about-honey-link">Подробнее о пользе и свойствах сорта</a>
+                
+                <div class="weight-selector">
+                    <select class="format-select">
+                        <option value="390" data-weight="500 г">500 г — 390 ₽</option>
+                        <option value="790" data-weight="1 кг" selected>1 кг — 790 ₽</option>
+                    </select>
+                </div>
+                <div class="price-block"><span class="price"><span class="price-val">790</span> ₽</span></div>
+                <div class="product-actions">
+                    <button class="btn btn-buy"><span class="btn-buy-label">В корзину</span></button>
+                    <button class="btn btn-one-click">1 клик</button>
+                    <button class="btn-favorite" title="Добавить в избранное" style="background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px; color: var(--primary-color);">♡</button>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="classic" data-product-id="podsolnechnik">
+                <div class="product-image-area">
+                    <img src="images/podsolnechnik.jpg" alt="Мёд Подсолнечник" class="product-img">
+                </div>
+                <h3>Мёд Подсолнечник</h3>
+                <p class="product-desc">Яркий, насыщенный сорт с мелкозернистой садкой. Рекордсмен по содержанию активных ферментов.</p>
+                
+                <a href="podsolnechnik.html" class="about-honey-link">Подробнее о пользе и свойствах сорта</a>
+                
+                <div class="weight-selector">
+                    <select class="format-select">
+                        <option value="350" data-weight="500 г">500 г — 350 ₽</option>
+                        <option value="620" data-weight="1 кг" selected>1 кг — 620 ₽</option>
+                    </select>
+                </div>
+                <div class="price-block"><span class="price"><span class="price-val">620</span> ₽</span></div>
+                <div class="product-actions">
+                    <button class="btn btn-buy"><span class="btn-buy-label">В корзину</span></button>
+                    <button class="btn btn-one-click">1 клик</button>
+                    <button class="btn-favorite" title="Добавить в избранное" style="background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px; color: var(--primary-color);">♡</button>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="rare" data-product-id="koriandr">
+                <div class="product-image-area">
+                    <img src="images/korr.jpg" alt="Мёд Кориандр" class="product-img">
+                </div>
+                <h3>Мёд Кориандр</h3>
+                <p class="product-desc">Редкий мужской сорт с глубоким пряно-карамельным ароматом и пикантным терпким послевкусием.</p>
+                
+                <a href="koriandr.html" class="about-honey-link">Подробнее о пользе и свойствах сорта</a>
+                
+                <div class="weight-selector">
+                    <select class="format-select">
+                        <option value="450" data-weight="500 г">500 г — 450 ₽</option>
+                        <option value="850" data-weight="1 кг" selected>1 кг — 850 ₽</option>
+                    </select>
+                </div>
+                <div class="price-block"><span class="price"><span class="price-val">850</span> ₽</span></div>
+                <div class="product-actions">
+                    <button class="btn btn-buy"><span class="btn-buy-label">В корзину</span></button>
+                    <button class="btn btn-one-click">1 клик</button>
+                    <button class="btn-favorite" title="Добавить в избранное" style="background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px; color: var(--primary-color);">♡</button>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="rare" data-product-id="mayskiy">
+                <div class="product-image-area">
+                    <img src="images/may.jpg" alt="Майский мёд" class="product-img">
+                </div>
+                <h3>Майский мёд</h3>
+                <p class="product-desc">Самый первый, драгоценный сбор нектара весенних первоцветов и цветущих южных садов.</p>
+                
+                <a href="mayskiy.html" class="about-honey-link">Подробнее о пользе и свойствах сорта</a>
+                
+                <div class="weight-selector">
+                    <select class="format-select">
+                        <option value="480" data-weight="500 г">500 г — 480 ₽</option>
+                        <option value="900" data-weight="1 кг" selected>1 кг — 900 ₽</option>
+                    </select>
+                </div>
+                <div class="price-block"><span class="price"><span class="price-val">900</span> ₽</span></div>
+                <div class="product-actions">
+                    <button class="btn btn-buy"><span class="btn-buy-label">В корзину</span></button>
+                    <button class="btn btn-one-click">1 клик</button>
+                    <button class="btn-favorite" title="Добавить в избранное" style="background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px; color: var(--primary-color);">♡</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    
+
+    
+
+    
+
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p class="serif-font" style="font-size: 24px; margin-bottom: 10px;">Дивно Мёд</p>
+            <p>&copy; 2026 Кочевая пасека. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div id="oneClickModal" class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 2000;">
+        <div class="modal-content" style="background: white; padding: 30px; border-radius: 8px; max-width: 450px; width: 90%; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <button class="close-modal" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 22px; cursor: pointer; color: #999;">&times;</button>
+            <h3 style="margin-top: 0; font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--dark-bg);">Быстрый заказ</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Вы заказываете: <br><strong id="modalProductInfo" style="color: var(--primary-color);">—</strong></p>
+            
+            <form id="oneClickForm" style="display: flex; flex-direction: column; gap: 15px;">
+                <label style="display: flex; flex-direction: column; font-size: 13px; font-weight: 500; gap: 5px;">
+                    Ваше имя:
+                    <input type="text" name="customer_name" required placeholder="Иван" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
+                </label>
+                <label style="display: flex; flex-direction: column; font-size: 13px; font-weight: 500; gap: 5px;">
+                    Номер телефона:
+                    <input type="tel" name="customer_phone" required placeholder="+7 (999) 000-00-00" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;">
+                </label>
+                <button type="submit" class="btn btn-primary" style="padding: 12px; font-weight: 600; border: none; cursor: pointer; margin-top: 5px;">Подтвердить заказ</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="cartDrawerOverlay"></div>
+    <div id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3 class="serif-font" style="font-size: 26px; margin: 0; color: var(--dark-bg);">Ваша корзина</h3>
+            <button id="cartDrawerClose" style="background:none; border:none; font-size:32px; color: var(--text-muted); cursor:pointer;">&times;</button>
+        </div>
+        <div id="cartDrawerBody"></div>
+        <div id="cartDrawerFooter">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.2rem; color: var(--dark-bg);">
+                <span>Итого:</span>
+                <span id="cartDrawerSubtotal">0 ₽</span>
+            </div>
+            <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

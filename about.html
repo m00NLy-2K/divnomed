@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О пасеке — Дивно Мёд</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo">
+                <span class="logo-text">Дивно Мёд</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Главная</a>
+                <a href="index.html#catalog">Каталог</a>
+                <a href="about.html" class="active">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+            <div class="header-actions">
+                <div class="fav-widget" style="display: inline-block; margin-right: 15px; cursor: pointer;">
+                    <span class="widget-icon">♡</span> <span class="action-text">Избранное</span> (<span id="fav-count">0</span>)
+                </div>
+                <div class="cart-widget" id="cartWidget" style="display: inline-block; cursor: pointer;">
+                    <span class="widget-icon">☙</span> <span class="action-text">Корзина</span> (<span id="cart-count">0</span>)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="benefits" class="benefits-section container" style="margin-top: 60px; margin-bottom: 60px;">
+            <h2 class="section-title" style="text-align: center;">Качество без компромиссов</h2>
+            <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px;">
+                <div class="benefit-item" style="text-align: center; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <div class="benefit-icon" style="font-size: 32px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif; color: var(--primary-color);">Ⅰ</div>
+                    <h3 style="font-size: 20px; margin-bottom: 10px;">Кочевая пасека</h3>
+                    <p style="font-size: 14px; color: #666; line-height: 1.6;">Перевозим улья за периодами цветения в Ставропольский край и Калмыкию, собирая самый чистый нектар диких медоносов.</p>
+                </div>
+                <div class="benefit-item" style="text-align: center; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <div class="benefit-icon" style="font-size: 32px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif; color: var(--primary-color);">Ⅱ</div>
+                    <h3 style="font-size: 20px; margin-bottom: 10px;">Не нагреваем мёд</h3>
+                    <p style="font-size: 14px; color: #666; line-height: 1.6;">Храним и фасуем продукт без термообработки. Все полезные ферменты, витамины и первозданный аромат остаются живыми.</p>
+                </div>
+                <div class="benefit-item" style="text-align: center; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <div class="benefit-icon" style="font-size: 32px; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif; color: var(--primary-color);">Ⅲ</div>
+                    <h3 style="font-size: 20px; margin-bottom: 10px;">Опыт с 1997 года</h3>
+                    <p style="font-size: 14px; color: #666; line-height: 1.6;">29 лет профессионального семейного пчеловодства гарантируют идеальную зрелость, чистоту и натуральность каждой банки.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <div class="container about-grid">
+                <div class="about-image-side">
+                    <img src="images/paseka.jpg" alt="Наша кочевая пасека" class="about-main-img">
+                </div>
+                <div class="about-text-side">
+                    <span class="about-subtitle">Семейная традиция с 1997 года</span>
+                    <h2>Наша история: от одного улья до кочевой пасеки</h2>
+                    <p>Моя семья будет рада предложить вам чистейшие продукты, в которые мы вкладываем душу и многолетний опыт. Наша история началась в теперь уже далеком 1997 году на живописных просторах Юга России. Именно тогда мой папа, искренне влюбившись в удивительный мир пчёл, решил основать своё собственное дело. Он сам, руководствуясь лишь огромным терпением, трудолюбием и упорством, поставил самый первый улей.</p>
+                    <p>Удивительно красивые у нас места — бескрайние, залитые солнцем степи Калмыкии, цветущие поля Ставропольского края и заповедные предгорья. Вдалеке от шумных дорог и грязных заводов простирается роскошное медоносное разнотравье. Здесь можно часами пить волшебный южный воздух — густой, чистый, со вкусом свободы, диких трав и согретых солнцем цветов. Именно этот первозданный вкус природы мы бережно сохраняем в каждой баночке нашего мёда.</p>
+                    <p>С того единственного улья наше дело выросло в сильное, стабильное хозяйство. Сегодня у нас живут и трудятся более 50 дружных пчелиных семей, которые за сезон приносят около 2–3 тонн жидкого золота. Каждую весну наша пасека легка на подъём. Мы кочуем вслед за цветением лучших медоносов Юга России, чтобы пчёлы брали нектар в самый пик его пользы. Мы принципиально не нагреваем продукт, не используем добавки и храним его в правильных флягах. Вот уже 29 лет мы радуем покупателей честным качеством.</p>
+                    
+                    <!-- Обновленный блок статистики -->
+                    <div class="about-stats-mini" style="display: flex; flex-wrap: wrap; gap: 40px; margin-top: 40px; margin-left: 0;">
+                        <div class="stat-item" style="display: flex; flex-direction: column; gap: 5px; align-items: center; background: #c67c00; padding: 15px 20px; border-radius: 8px; color: white; min-width: 80px;">
+                            <strong style="font-size: 24px;">29</strong>
+                            <span style="font-size: 12px; text-transform: uppercase;">лет делу</span>
+                        </div>
+                        <div class="stat-item" style="display: flex; flex-direction: column; gap: 5px;">
+                            <strong style="font-size: 26px; font-family: 'Cormorant Garamond', serif; color: #3d2b1f;">50+</strong>
+                            <span style="font-size: 14px; color: #666;">Пчелосемей</span>
+                        </div>
+                        <div class="stat-item" style="display: flex; flex-direction: column; gap: 5px;">
+                            <strong style="font-size: 26px; font-family: 'Cormorant Garamond', serif; color: #3d2b1f;">2-3 т</strong>
+                            <span style="font-size: 14px; color: #666;">Сбор за сезон</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Кочевая пасека "Дивно Мёд". Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div id="cartDrawerOverlay"></div>
+    <div id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3 class="serif-font" style="font-size: 26px; margin: 0; color: var(--dark-bg);">Ваша корзина</h3>
+            <button id="cartDrawerClose" style="background:none; border:none; font-size:32px; color: var(--text-muted); cursor:pointer;">&times;</button>
+        </div>
+        <div id="cartDrawerBody"></div>
+        <div id="cartDrawerFooter">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.2rem; color: var(--dark-bg);">
+                <span>Итого:</span>
+                <span id="cartDrawerSubtotal">0 ₽</span>
+            </div>
+            <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

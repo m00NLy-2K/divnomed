@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мёд Кориандр — Свойства и польза сорта</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo">
+                <span class="logo-text">Дивно Мёд</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Главная</a>
+                <a href="index.html#catalog">Каталог</a>
+                <a href="about.html">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+            <div class="header-actions">
+                <div class="fav-widget" style="display: inline-block; margin-right: 15px; cursor: pointer;">
+                    <span class="action-text">Избранное</span> (<span id="fav-count">0</span>)
+                </div>
+                <div class="cart-widget" id="cartWidget" style="display: inline-block; cursor: pointer;">
+                    <span class="action-text">Корзина</span> (<span id="cart-count">0</span>)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="honey-article-container container">
+
+        <nav class="breadcrumbs">
+            <a href="index.html">Главная</a>
+            <span class="bc-separator">/</span>
+            <a href="index.html#catalog">Каталог</a>
+            <span class="bc-separator">/</span>
+            <span class="bc-current">Мёд Кориандр</span>
+        </nav>
+
+        <div class="article-layout">
+
+            <article class="article-content">
+                <h1>Кориандровый мёд: <br><span class="title-sub">редкий пряный вкус с мужским характером</span></h1>
+
+                <p class="lead-text">Кориандровый мёд — редкий, ценный монофлорный сорт. Цветущий кориандр богат эфирными маслами, которые передаются готовому продукту, формируя уникальный карамельно-пряный аромат и пикантный терпкий вкус.</p>
+
+                <div class="article-divider"></div>
+
+                <h2>Чем полезен кориандровый мёд?</h2>
+                <p>Благодаря повышенному природному содержанию железа, меди и марганца, этот сорт ценится за выраженное целебное действие:</p>
+
+                <ul class="premium-list">
+                    <li>
+                        <strong>Улучшение пищеварения:</strong> Кориандровый мёд активизирует работу желудка, стимулирует аппетит, снимает спазмы и помогает нормализовать работу всего желудочно-кишечного тракта.
+                    </li>
+                    <li>
+                        <strong>Борьба с анемией:</strong> Из-за высокого содержания железа сорт активно участвует в процессах кроветворения, способствует повышению гемоглобина и отлично восстанавливает силы.
+                    </li>
+                    <li>
+                        <strong>Мужское здоровье:</strong> Фитостерины кориандра издавна ценятся в народной медицине как эффективное природное средство для поддержания тонуса мужской репродуктивной системы.
+                    </li>
+                </ul>
+
+                <h2>Физические характеристики</h2>
+                <p>Наш кориандровый мёд имеет красивый янтарный, а со временем — глубокий коричневатый оттенок. Он кристаллизуется в течение 1-2 месяцев, превращаясь в крупнозернистую массу с сильным карамельным послевкусием. Мы строго следим за тем, чтобы мёд фасовался холодным способом, сохраняя летучие эфирные масла.</p>
+
+                <div class="honey-note">
+                    <span class="note-icon" style="font-family: 'Cormorant Garamond', serif; color: var(--primary-color); font-size: 2rem;">☙</span>
+                    <p><strong>Заметка пчеловода:</strong> Если вам надоел привычный сладкий мёд и вы ищете необычный, глубокий вкус с пряным оттенком и мощной пользой для желудка — кориандровый сорт создан для вас.</p>
+                </div>
+            </article>
+
+            <aside class="article-sidebar">
+                <div class="premium-buy-card">
+                    <div class="card-honey-badge">В наличии</div>
+                    <h3>Натуральный мёд <br>«Кориандр»</h3>
+                    <p class="card-meta">Сбор: Июнь-Июль • Кочевые поля Юга РФ</p>
+
+                    <div class="card-price-block">
+                        <span class="price-label">Цена за 1 кг</span>
+                        <span class="price-amount">850 ₽</span>
+                    </div>
+
+                    <div class="card-features">
+                        <div class="feat-item"><span class="ornament" style="color: var(--primary-color);">❖</span> Живой сырой продукт без нагревания</div>
+                        <div class="feat-item"><span class="ornament" style="color: var(--primary-color);">✧</span> Бережная доставка по всей РФ</div>
+                    </div>
+
+                    <button class="btn-card-buy btn-card-add-to-cart"
+                            style="width: 100%; margin-top: 15px; border: none; cursor: pointer; font-family: inherit;"
+                            data-product-id="koriandr"
+                            data-product-name="Мёд Кориандр"
+                            data-product-weight="1 кг"
+                            data-product-price="850"
+                            data-product-img="images/korr.jpg"> В корзину
+                    </button>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Кочевая пасека "Дивно Мёд". Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div id="cartDrawerOverlay"></div>
+    <div id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3 class="serif-font" style="font-size: 26px; margin: 0; color: var(--dark-bg);">Ваша корзина</h3>
+            <button id="cartDrawerClose" style="background:none; border:none; font-size:32px; color: var(--text-muted); cursor:pointer;">&times;</button>
+        </div>
+        <div id="cartDrawerBody"></div>
+        <div id="cartDrawerFooter">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.2rem; color: var(--dark-bg);">
+                <span>Итого:</span>
+                <span id="cartDrawerSubtotal">0 ₽</span>
+            </div>
+            <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

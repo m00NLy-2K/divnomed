@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Майский мёд — Свойства и польза сорта</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo">
+                <span class="logo-text">Дивно Мёд</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Главная</a>
+                <a href="index.html#catalog">Каталог</a>
+                <a href="about.html">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+            <div class="header-actions">
+                <div class="fav-widget" style="display: inline-block; margin-right: 15px; cursor: pointer;">
+                    <span class="action-text">Избранное</span> (<span id="fav-count">0</span>)
+                </div>
+                <div class="cart-widget" id="cartWidget" style="display: inline-block; cursor: pointer;">
+                    <span class="action-text">Корзина</span> (<span id="cart-count">0</span>)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="honey-article-container container">
+
+        <nav class="breadcrumbs">
+            <a href="index.html">Главная</a>
+            <span class="bc-separator">/</span>
+            <a href="index.html#catalog">Каталог</a>
+            <span class="bc-separator">/</span>
+            <span class="bc-current">Майский мёд</span>
+        </nav>
+
+        <div class="article-layout">
+
+            <article class="article-content">
+                <h1>Майский мёд: <br><span class="title-sub">драгоценный нектар первых весенних садов</span></h1>
+
+                <p class="lead-text">Майский мёд — это самый первый, долгожданный сбор нашей кочевой пасеки. Пчёлы создают его из нектара пробуждающейся весенней природы: цветущих диких садов (яблоня, груша, вишня), одуванчиков, клёна и ивы.</p>
+
+                <div class="article-divider"></div>
+
+                <h2>Целебная сила весеннего сбора</h2>
+                <p>Весенний мёд аккумулирует колоссальную жизненную энергию первоцветов, что определяет его высокую биологическую ценность:</p>
+
+                <ul class="premium-list">
+                    <li>
+                        <strong>Экспресс-восстановление:</strong> Легкоусвояемые весенние сахара быстро восстанавливают силы организма после физического истощения, затяжных зимних простуд и авитаминоза.
+                    </li>
+                    <li>
+                        <strong>Помощь при простуде:</strong> Обладает выраженным мягким жаропонижающим и противовоспалительным действием, помогая организму справляться с первыми симптомами ОРВИ.
+                    </li>
+                    <li>
+                        <strong>Нежный вкус:</strong> Несмотря на богатый весенний состав, этот мёд гипоаллергенен, имеет приятный сладкий вкус с легким освежающим холодком и полностью лишен горечи.
+                    </li>
+                </ul>
+
+                <h2>Особенности сбора</h2>
+                <p>Откачка майского мёда — тонкая ювелирная работа пчеловода, ведь важно оставить достаточно весеннего корма для развития самих пчелиных семей. Свежий майский мёд очень жидкий и прозрачный, со временем он приобретает красивую пастообразную структуру с легким лимонно-желтым оттенком.</p>
+
+                <div class="honey-note">
+                    <span class="note-icon" style="font-family: 'Cormorant Garamond', serif; color: var(--primary-color); font-size: 2rem;">☙</span>
+                    <p><strong>Заметка пчеловода:</strong> Настоящий майский мёд — это всегда дефицит. Его объемы ограничены природой, поэтому он считается одним из самых ценных подарков для здоровья детей и пожилых людей.</p>
+                </div>
+            </article>
+
+            <aside class="article-sidebar">
+                <div class="premium-buy-card">
+                    <div class="card-honey-badge">В наличии</div>
+                    <h3>Натуральный мёд <br>«Майский»</h3>
+                    <p class="card-meta">Сбор: Конец Мая • Южные сады России</p>
+
+                    <div class="card-price-block">
+                        <span class="price-label">Цена за 1 кг</span>
+                        <span class="price-amount">900 ₽</span>
+                    </div>
+
+                    <div class="card-features">
+                        <div class="feat-item"><span class="ornament" style="color: var(--primary-color);">❖</span> Живой сырой продукт без нагревания</div>
+                        <div class="feat-item"><span class="ornament" style="color: var(--primary-color);">✧</span> Бережная доставка по всей РФ</div>
+                    </div>
+
+                    <button class="btn-card-buy btn-card-add-to-cart"
+                            style="width: 100%; margin-top: 15px; border: none; cursor: pointer; font-family: inherit;"
+                            data-product-id="mayskiy"
+                            data-product-name="Мёд Акация"
+                            data-product-weight="1 кг"
+                            data-product-price="900"
+                            data-product-img="images/mayskiy.jpg"> В корзину
+                    </button>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Кочевая пасека "Дивно Мёд". Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div id="cartDrawerOverlay"></div>
+    <div id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3 class="serif-font" style="font-size: 26px; margin: 0; color: var(--dark-bg);">Ваша корзина</h3>
+            <button id="cartDrawerClose" style="background:none; border:none; font-size:32px; color: var(--text-muted); cursor:pointer;">&times;</button>
+        </div>
+        <div id="cartDrawerBody"></div>
+        <div id="cartDrawerFooter">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.2rem; color: var(--dark-bg);">
+                <span>Итого:</span>
+                <span id="cartDrawerSubtotal">0 ₽</span>
+            </div>
+            <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

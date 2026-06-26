@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мёд белого донника — Наша кочевая пасека</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo">
+                <span class="logo-text">Дивно Мёд</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Главная</a>
+                <a href="index.html#catalog">Каталог</a>
+                <a href="about.html">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+            <div class="header-actions">
+                <div class="fav-widget" style="display: inline-block; margin-right: 15px; cursor: pointer;">
+                    <span class="action-text">Избранное</span> (<span id="fav-count">0</span>)
+                </div>
+                <div class="cart-widget" id="cartWidget" style="display: inline-block; cursor: pointer;">
+                    <span class="action-text">Корзина</span> (<span id="cart-count">0</span>)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="honey-article-container container">
+        
+        <nav class="breadcrumbs">
+            <a href="index.html">Главная</a>
+            <span class="bc-separator">/</span>
+            <a href="index.html#catalog">Каталог</a>
+            <span class="bc-separator">/</span>
+            <span class="bc-current">Мёд Донник</span>
+        </nav>
+
+        <div class="article-layout">
+            
+            <article class="article-content">
+                <h1>Мёд Белого Донника: <br><span class="title-sub">эталон нежности и вкуса</span></h1>
+                
+                <p class="lead-text">Донниковый мёд — один из самых популярных и любимых сортов среди наших покупателей. Его ценят за удивительно мягкий вкус и тонкий, едва уловимый аромат с нежными нотками натуральной ванили.</p>
+                
+                <div class="article-divider"></div>
+
+                <h2>Чем полезен донниковый мёд для организма?</h2>
+                <p>Благодаря лекарственным свойствам самого растения донника, этот сорт мёда обладает выраженным целебным действием на организм:</p>
+                
+                <ul class="premium-list">
+                    <li>
+                        <strong>Для сердца и сосудов:</strong> Донник содержит кумарин — ценное вещество, которое способствует разжижению крови, улучшает кровообращение и помогает мягко нормализовать давление.
+                    </li>
+                    <li>
+                        <strong>Успокаивающее средство:</strong> Ложка донникового мёда с теплым чаем отлично снимает дневную усталость, избавляет от тревожности, головной боли и помогает при бессоннице.
+                    </li>
+                    <li>
+                        <strong>Антибактериальный эффект:</strong> Обладает мощным противовоспалительным действием, поэтому незаменим при кашле, простудах и болях в горле.
+                    </li>
+                    <li>
+                        <strong>Для кормящих мам:</strong> В народной медицине донниковый мёд традиционно используют для улучшения лактации.
+                    </li>
+                </ul>
+
+                <h2>Особенности сбора на нашей пасеке</h2>
+                <p>Этот сорт мы собираем на бескрайних полях степной зоны Юга России, где донник цветет всё лето. Настоящий чистый донниковый мёд имеет очень светлый, почти белый или нежно-кремовый цвет после кристаллизации, а его структура становится похожей на густое, нежное масло.</p>
+                
+                <div class="honey-note">
+                    <span class="note-icon" style="font-family: 'Cormorant Garamond', serif; color: var(--primary-color); font-size: 2rem;">☙</span>
+                    <p><strong>Заметка пчеловода:</strong> Мёд донника — отличный выбор «на каждый день» для всей семьи. Из-за отсутствия приторности и резкой горчинки его очень любят дети.</p>
+                </div>
+            </article>
+
+            <aside class="article-sidebar">
+                <div class="premium-buy-card">
+                    <div class="card-honey-badge">В наличии</div>
+                    <h3>Натуральный мёд <br>«Белый Донник»</h3>
+                    <p class="card-meta">Сбор: Лето 2025 г. • Юг России</p>
+                    
+                    <div class="card-price-block">
+                        <span class="price-label">Цена за 1 кг</span>
+                        <span class="price-amount">790 ₽</span>
+                    </div>
+
+                    <div class="card-features">
+                        <div class="feat-item"><span class="ornament" style="color: var(--primary-color);">❖</span> 100% сырой продукт без нагревания</div>
+                        <div class="feat-item"><span class="ornament" style="color: var(--primary-color);">✧</span> Бережная доставка по всей РФ</div>
+                    </div>
+
+                    <button class="btn-card-buy btn-card-add-to-cart"
+                            style="width: 100%; margin-top: 15px; border: none; cursor: pointer; font-family: inherit;"
+                            data-product-id="donnik"
+                            data-product-name="Мёд Доннника"
+                            data-product-weight="1 кг"
+                            data-product-price="790"
+                            data-product-img="images/donn.jpg"> В корзину
+                    </button>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Кочевая пасека "Дивно Мёд". Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div id="cartDrawerOverlay"></div>
+    <div id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3 class="serif-font" style="font-size: 26px; margin: 0; color: var(--dark-bg);">Ваша корзина</h3>
+            <button id="cartDrawerClose" style="background:none; border:none; font-size:32px; color: var(--text-muted); cursor:pointer;">&times;</button>
+        </div>
+        <div id="cartDrawerBody"></div>
+        <div id="cartDrawerFooter">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.2rem; color: var(--dark-bg);">
+                <span>Итого:</span>
+                <span id="cartDrawerSubtotal">0 ₽</span>
+            </div>
+            <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа — Дивно Мёд</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo">
+                <span class="logo-text">Дивно Мёд</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Главная</a>
+                <a href="index.html#catalog">Каталог</a>
+                <a href="about.html">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+            <div class="header-actions">
+                <div class="fav-widget" style="display: inline-block; margin-right: 15px; cursor: pointer;">
+                    <span class="action-text">Избранное</span> (<span id="fav-count">0</span>)
+                </div>
+                <div class="cart-widget" id="cartWidget" style="display: inline-block; cursor: pointer;">
+                    <span class="action-text">Корзина</span> (<span id="cart-count">0</span>)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 60px 0 100px;">
+        <h1 class="section-title" style="margin-bottom: 40px;">Оформление заказа</h1>
+        
+        <div id="cartPageEmptyState" style="display: none; text-align: center; padding: 60px 0; background: white; border-radius: 12px; border: 1px solid #eae4de;">
+            <div style="font-size: 64px; color: #d1cedc; margin-bottom: 20px;">☙</div>
+            <h3 class="serif-font" style="font-size: 28px; margin-bottom: 15px;">В корзине пока пусто</h3>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Перейдите в каталог, чтобы выбрать свой любимый сорт мёда.</p>
+            <a href="index.html#catalog" class="btn btn-primary">Вернуться к покупкам</a>
+        </div>
+
+        <div id="cartPageLayout" style="display: none;">
+            <div class="cart-left-col">
+                <div id="cartPageItems" style="background: white; border-radius: 12px; border: 1px solid #eae4de; padding: 0 30px; margin-bottom: 40px;">
+                </div>
+
+                <h2 class="serif-font" style="margin-bottom: 25px; font-size: 28px;">Данные для доставки</h2>
+                <form id="checkoutForm" style="background: white; padding: 35px; border-radius: 12px; border: 1px solid #eae4de;">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Имя и Фамилия</label>
+                        <input type="text" placeholder="Иван Иванов" required style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Контактный телефон</label>
+                        <input type="tel" placeholder="+7 (999) 000-00-00" required style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Адрес доставки (СДЭК или Почта)</label>
+                        <textarea placeholder="Город, улица, дом, индекс" required style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px; min-height: 120px;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 18px;">Подтвердить заказ</button>
+                </form>
+            </div>
+
+            <div class="cart-right-col">
+                <div class="cart-summary-box">
+                    <h3 class="serif-font" style="font-size: 26px; margin-bottom: 30px;">Ваш заказ</h3>
+                    <div class="summary-line">
+                        <span>Товары (<span id="cartSummaryItemsCount">0</span> шт.)</span>
+                        <span id="cartSummarySubtotal">0 ₽</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Доставка</span>
+                        <span id="cartSummaryDelivery">350 ₽</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>К оплате:</span>
+                        <span id="cartSummaryTotal">0 ₽</span>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 20px; text-align: center; background: var(--bg-light); padding: 10px; border-radius: 6px;">
+                        Бесплатная доставка при заказе от 3000 ₽
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Кочевая пасека "Дивно Мёд". Все права защищены.</p>
+        </div>
+    </footer>
+
+    <div id="cartDrawerOverlay"></div>
+    <div id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3 class="serif-font" style="font-size: 26px; margin: 0; color: var(--dark-bg);">Ваша корзина</h3>
+            <button id="cartDrawerClose" style="background:none; border:none; font-size:32px; color: var(--text-muted); cursor:pointer;">&times;</button>
+        </div>
+        <div id="cartDrawerBody"></div>
+        <div id="cartDrawerFooter">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.2rem; color: var(--dark-bg);">
+                <span>Итого:</span>
+                <span id="cartDrawerSubtotal">0 ₽</span>
+            </div>
+            <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
