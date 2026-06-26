@@ -24,10 +24,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatPrice = (value) => `${value.toLocaleString('ru-RU')} ₽`;
 
     // ============================================================
+    // МОДЕЛЬ ИЗБРАННОГО (Сохраняем в localStorage)
+    // ============================================================
+    const FAV_STORAGE_KEY = 'divno-honey-fav';
+
+    const Fav = {
+        read() {
+            try {
+                const raw = localStorage.getItem(FAV_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (err) {
+                return [];
+            }
+        },
+        write(items) {
+            localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(items));
+            Fav.notify();
+        },
+        listeners: [],
+        onChange(fn) { Fav.listeners.push(fn); },
+        notify() { Fav.listeners.forEach(fn => fn(Fav.read())); },
+
+        toggle({ id, name, img, link, price }) {
+            let items = Fav.read();
+            const exists = items.find(it => it.id === id);
+            if (exists) {
+                items = items.filter(it => it.id !== id); // Удаляем, если уже есть
+            } else {
+                items.push({ id, name, img, link, price }); // Добавляем, если нет
+            }
+            Fav.write(items);
+            return !exists; // возвращает true, если добавлено
+        },
+        remove(id) {
+            let items = Fav.read().filter(it => it.id !== id);
+            Fav.write(items);
+        },
+        has(id) {
+            return Fav.read().some(it => it.id === id);
+        }
+    };
+
+    // ============================================================
     // МОДЕЛЬ КОРЗИНЫ
-    // Хранится в localStorage, поэтому переживает переход между
-    // страницами сайта (index.html, страницы сортов, cart.html).
-    // Формат записи: { id, name, weight, price, qty, img }
     // ============================================================
     const CART_STORAGE_KEY = 'divno-honey-cart';
 
@@ -38,21 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const parsed = raw ? JSON.parse(raw) : [];
                 return Array.isArray(parsed) ? parsed : [];
             } catch (err) {
-                // Битые данные в localStorage не должны положить весь сайт —
-                // просто стартуем с пустой корзиной и сообщаем в консоль
-                console.warn('Не удалось прочитать корзину из localStorage:', err);
                 return [];
             }
         },
         write(items) {
-            try {
-                localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-            } catch (err) {
-                console.warn('Не удалось сохранить корзину в localStorage:', err);
-            }
+            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
             Cart.notify();
         },
-        // Подписчики на изменения корзины (рендер панели, рендер страницы cart.html, счётчик в шапке)
         listeners: [],
         onChange(fn) { Cart.listeners.push(fn); },
         notify() { Cart.listeners.forEach(fn => fn(Cart.read())); },
@@ -92,25 +123,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Если корзину поменяли в другой вкладке этого же сайта — обновляем UI и здесь
     window.addEventListener('storage', (e) => {
         if (e.key === CART_STORAGE_KEY) Cart.notify();
+        if (e.key === FAV_STORAGE_KEY) Fav.notify();
     });
 
     // ============================================================
-    // СЧЁТЧИК КОРЗИНЫ В ШАПКЕ (есть на всех страницах сайта)
+    // СЧЁТЧИКИ В ШАПКЕ И КЛИК ПО ВИДЖЕТАМ
     // ============================================================
     const cartCountSpan = document.getElementById('cart-count');
-    const renderCartCount = (items) => {
-        if (!cartCountSpan) return;
-        const count = Cart.totalCount(items);
-        cartCountSpan.textContent = count;
-        cartCountSpan.dataset.zero = count === 0 ? 'true' : 'false';
-    };
-    Cart.onChange(renderCartCount);
+    Cart.onChange((items) => {
+        if (cartCountSpan) cartCountSpan.textContent = Cart.totalCount(items);
+    });
+
+    const favCountSpan = document.getElementById('fav-count');
+    Fav.onChange((items) => {
+        if (favCountSpan) favCountSpan.textContent = items.length;
+    });
+
+    // Делаем виджет Избранного кликабельным без изменения HTML
+    document.querySelectorAll('.fav-widget').forEach(widget => {
+        widget.addEventListener('click', () => {
+            window.location.href = 'favorites.html';
+        });
+    });
 
     // ============================================================
-    // ПАНЕЛЬ КОРЗИНЫ (выезжает справа на любой странице сайта)
+    // ПАНЕЛЬ КОРЗИНЫ (выезжает справа)
     // ============================================================
     const cartWidget = document.getElementById('cartWidget');
     const cartDrawer = document.getElementById('cartDrawer');
@@ -171,8 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     Cart.onChange(renderCartDrawer);
 
-    // Делегируем клики внутри панели на +/−/удалить, чтобы не навешивать
-    // обработчики заново при каждом перерендере содержимого
     if (cartDrawerBody) {
         cartDrawerBody.addEventListener('click', (e) => {
             const line = e.target.closest('.cart-line-item');
@@ -213,42 +250,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============================================================
-    // 1. ИЗМЕНЕНИЕ ЦЕНЫ В ЗАВИСИМОСТИ ОТ ВЕСА (карточки в каталоге на главной)
+    // 1. ИЗМЕНЕНИЕ ЦЕНЫ В ЗАВИСИМОСТИ ОТ ВЕСА
     // ============================================================
     const formatSelectors = document.querySelectorAll('.format-select');
     formatSelectors.forEach(select => {
         select.addEventListener('change', (e) => {
             const card = e.target.closest('.product-card');
             if (!card) return;
-
             const priceVal = card.querySelector('.price-val');
-            if (priceVal) {
-                priceVal.textContent = e.target.value;
-            }
+            if (priceVal) priceVal.textContent = e.target.value;
         });
     });
 
     // ============================================================
-    // 2. ФИЛЬТРАЦИЯ СОРТОВ МЁДА (только на главной)
+    // 2. ФИЛЬТРАЦИЯ СОРТОВ МЁДА
     // ============================================================
     const filterButtons = document.querySelectorAll('.filter-btn');
     const productCards = document.querySelectorAll('.product-card');
-
-    const knownCategories = new Set(
-        Array.from(filterButtons).map(b => b.dataset.category)
-    );
-    productCards.forEach(card => {
-        const cardCategory = card.dataset.category;
-        if (filterButtons.length && !knownCategories.has(cardCategory)) {
-            console.warn('Карточка товара с неизвестной категорией:', cardCategory, card);
-        }
-    });
 
     filterButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             filterButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
             const targetCategory = btn.dataset.category;
 
             productCards.forEach(card => {
@@ -263,32 +286,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============================================================
-    // 3. ДОБАВЛЕНИЕ В ИЗБРАННОЕ (визуальное состояние кнопки + счётчик в шапке)
+    // 3. ДОБАВЛЕНИЕ В ИЗБРАННОЕ (кнопка в карточке)
     // ============================================================
     const favButtons = document.querySelectorAll('.btn-favorite');
-    const favCountSpan = document.getElementById('fav-count');
-    let favCount = favCountSpan ? parseInt(favCountSpan.textContent || '0', 10) : 0;
-
-    const renderFavCount = () => {
-        if (!favCountSpan) return;
-        favCountSpan.textContent = favCount;
-        favCountSpan.dataset.zero = favCount === 0 ? 'true' : 'false';
-    };
-    renderFavCount();
-
+    
+    // При загрузке проверяем, какие товары уже в избранном, и закрашиваем сердечко
     favButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.classList.toggle('active');
+        const card = btn.closest('.product-card');
+        if (card && Fav.has(card.dataset.productId)) {
+            btn.classList.add('active');
+        }
 
-            favCount += btn.classList.contains('active') ? 1 : -1;
-            renderFavCount();
+        btn.addEventListener('click', () => {
+            if (!card) return;
+            const id = card.dataset.productId;
+            const name = card.querySelector('h3')?.textContent?.trim() || 'Сортовой мёд';
+            const img = card.querySelector('.product-img')?.getAttribute('src') || '';
+            const link = card.querySelector('.about-honey-link')?.getAttribute('href') || '#';
+            const price = card.querySelector('.price-val')?.textContent || '0';
+
+            // Переключаем статус товара в памяти
+            const isAdded = Fav.toggle({ id, name, img, link, price });
+            
+            btn.classList.toggle('active', isAdded);
             triggerWidgetBump('fav-count');
         });
     });
 
     // ============================================================
-    // 4. КНОПКА "В КОРЗИНУ" — карточки каталога на главной
-    //    Добавляет товар в реальную модель Cart, а не только мигает.
+    // 4. КНОПКА "В КОРЗИНУ" (Главная страница)
     // ============================================================
     const buyButtons = document.querySelectorAll('.product-card .btn-buy');
     const buttonTimeouts = new Map();
@@ -312,24 +338,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 price = select.value;
             }
 
-            if (!id) {
-                // Защита от карточек без data-product-id (опечатка в разметке) —
-                // без идентификатора товар нельзя надёжно отличить от другого в корзине
-                console.warn('У карточки товара нет data-product-id, добавление в корзину отменено:', card);
-                return;
-            }
-
+            if (!id) return;
             Cart.add({ id, name, weight, price, img });
-
             triggerWidgetBump('cart-count');
 
             btn.classList.add('in-cart');
             const label = btn.querySelector('.btn-buy-label');
             if (label) label.textContent = 'В корзине';
 
-            if (buttonTimeouts.has(btn)) {
-                clearTimeout(buttonTimeouts.get(btn));
-            }
+            if (buttonTimeouts.has(btn)) clearTimeout(buttonTimeouts.get(btn));
             const timeoutId = setTimeout(() => {
                 btn.classList.remove('in-cart');
                 if (label) label.textContent = 'В корзину';
@@ -339,33 +356,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-// ============================================================
-    // 4b. КНОПКА "В КОРЗИНУ" — карточка заказа на странице отдельного сорта
+    // ============================================================
+    // 4b. КНОПКА "В КОРЗИНУ" (Страница сорта)
     // ============================================================
     const cardAddButtons = document.querySelectorAll('.btn-card-add-to-cart');
     cardAddButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Добавили productImg в получение данных!
             const { productId, productName, productWeight, productPrice, productImg } = btn.dataset;
-            if (!productId) {
-                console.warn('У кнопки добавления в корзину нет data-product-id:', btn);
-                return;
-            }
+            if (!productId) return;
 
             Cart.add({
                 id: productId,
                 name: productName || 'Сортовой мёд',
                 weight: productWeight || '1 кг',
                 price: productPrice || '0',
-                img: productImg || '' // <--- ТЕПЕРЬ ФОТО БЕРЕТСЯ ИЗ КНОПКИ
+                img: productImg || ''
             });
 
             triggerWidgetBump('cart-count');
-
             btn.classList.add('in-cart');
-            if (buttonTimeouts.has(btn)) {
-                clearTimeout(buttonTimeouts.get(btn));
-            }
+            if (buttonTimeouts.has(btn)) clearTimeout(buttonTimeouts.get(btn));
             const timeoutId = setTimeout(() => {
                 btn.classList.remove('in-cart');
                 buttonTimeouts.delete(btn);
@@ -375,76 +385,71 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============================================================
-    // 5. АККОРДЕОН FAQ (главная и faq.html)
+    // 5. РЕНДЕР СТРАНИЦЫ ИЗБРАННОГО (favorites.html)
     // ============================================================
-    const faqItems = document.querySelectorAll('.faq-item');
-    faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question');
-        if (!question) return;
+    const favPageItemsContainer = document.getElementById('favPageItems');
+    const favPageEmptyState = document.getElementById('favPageEmptyState');
 
-        question.addEventListener('click', () => {
-            const isActive = item.classList.contains('active');
-            faqItems.forEach(other => other.classList.remove('active'));
-            if (!isActive) {
-                item.classList.add('active');
+    const renderFavPage = (items) => {
+        if (!favPageItemsContainer) return;
+
+        const isEmpty = items.length === 0;
+        if (favPageEmptyState) favPageEmptyState.style.display = isEmpty ? 'block' : 'none';
+        if (favPageItemsContainer) favPageItemsContainer.style.display = isEmpty ? 'none' : 'grid';
+        if (isEmpty) return;
+
+        favPageItemsContainer.innerHTML = items.map(it => `
+            <div class="product-card" style="display: flex; flex-direction: column;">
+                <div class="product-image-area">
+                    ${it.img ? `<img src="${it.img}" class="product-img" alt="${it.name}">` : ''}
+                </div>
+                <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--dark-bg);">${it.name}</h3>
+                <a href="${it.link}" class="about-honey-link">Перейти к описанию сорта</a>
+                
+                <div class="price-block" style="margin-top: auto; padding-top: 20px;">
+                    <span class="price">${it.price} ₽</span>
+                </div>
+                
+                <div class="product-actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn btn-buy fav-to-cart-btn" style="width: 100%;" data-id="${it.id}" data-name="${it.name}" data-img="${it.img}" data-price="${it.price}">В корзину</button>
+                    <button class="btn-one-click fav-remove-btn" style="width: 100%; border-color: #eae4de; color: #a8a29e;" data-id="${it.id}">Убрать из избранного</button>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    Fav.onChange(renderFavPage);
+
+    if (favPageItemsContainer) {
+        favPageItemsContainer.addEventListener('click', (e) => {
+            const removeBtn = e.target.closest('.fav-remove-btn');
+            if (removeBtn) {
+                Fav.remove(removeBtn.dataset.id);
+            }
+
+            const cartBtn = e.target.closest('.fav-to-cart-btn');
+            if (cartBtn) {
+                Cart.add({
+                    id: cartBtn.dataset.id,
+                    name: cartBtn.dataset.name,
+                    weight: '1 кг',
+                    price: cartBtn.dataset.price,
+                    img: cartBtn.dataset.img
+                });
+                triggerWidgetBump('cart-count');
+                
+                cartBtn.textContent = 'В корзине ✓';
+                cartBtn.style.background = '#2e7d32';
+                setTimeout(() => {
+                    cartBtn.textContent = 'В корзину';
+                    cartBtn.style.background = '';
+                }, 1200);
             }
         });
-    });
-
-    // ============================================================
-    // 6. МОДАЛЬНОЕ ОКНО "КУПИТЬ В 1 КЛИК" (Изолировано от ошибок)
-    // ============================================================
-    const oneClickButtons = document.querySelectorAll('.btn-one-click');
-    const modal = document.getElementById('oneClickModal');
-    const closeModal = document.querySelector('.close-modal');
-    const modalProductInfo = document.getElementById('modalProductInfo');
-    const oneClickForm = document.getElementById('oneClickForm');
-
-    if (modal) {
-        oneClickButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const card = e.target.closest('.product-card');
-                if (!card) return;
-
-                const name = card.querySelector('h3')?.textContent || 'Сортовой мёд';
-                const select = card.querySelector('.format-select');
-
-                let weight = 'Не указан';
-                let price = '0';
-
-                if (select && select.selectedOptions.length > 0) {
-                    const selectedOption = select.selectedOptions[0];
-                    weight = selectedOption.dataset.weight || selectedOption.textContent;
-                    price = select.value;
-                }
-
-                if (modalProductInfo) {
-                    modalProductInfo.textContent = `${name} (${weight}) — ${price} ₽`;
-                }
-                modal.classList.add('open');
-            });
-        });
-
-        if (closeModal) {
-            closeModal.addEventListener('click', () => modal.classList.remove('open'));
-        }
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('open');
-        });
-
-        if (oneClickForm) {
-            oneClickForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                alert('Спасибо за заказ! Наш пчеловод свяжется с вами в течение 10 минут для подтверждения.');
-                modal.classList.remove('open');
-                oneClickForm.reset();
-            });
-        }
     }
 
     // ============================================================
-    // 7. СТРАНИЦА КОРЗИНЫ / ОФОРМЛЕНИЯ ЗАКАЗА (cart.html)
+    // 6. СТРАНИЦА КОРЗИНЫ / ОФОРМЛЕНИЯ ЗАКАЗА (cart.html)
     // ============================================================
     const cartPageItemsContainer = document.getElementById('cartPageItems');
     const cartPageEmptyState = document.getElementById('cartPageEmptyState');
@@ -458,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const FREE_DELIVERY_THRESHOLD = 3000;
 
     const renderCartPage = (items) => {
-        if (!cartPageItemsContainer) return; // Этого блока нет вне cart.html
+        if (!cartPageItemsContainer) return; 
 
         const isEmpty = items.length === 0;
         if (cartPageEmptyState) cartPageEmptyState.style.display = isEmpty ? 'block' : 'none';
@@ -530,6 +535,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Первичная отрисовка состояния корзины на загрузке любой страницы сайта
+    // ============================================================
+    // 7. FAQ АККОРДЕОН И МОДАЛКА
+    // ============================================================
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        if (!question) return;
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            faqItems.forEach(other => other.classList.remove('active'));
+            if (!isActive) item.classList.add('active');
+        });
+    });
+
+    const oneClickButtons = document.querySelectorAll('.btn-one-click');
+    const modal = document.getElementById('oneClickModal');
+    const closeModal = document.querySelector('.close-modal');
+    const modalProductInfo = document.getElementById('modalProductInfo');
+    const oneClickForm = document.getElementById('oneClickForm');
+
+    if (modal) {
+        oneClickButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const card = e.target.closest('.product-card');
+                if (!card) return;
+                const name = card.querySelector('h3')?.textContent || 'Сортовой мёд';
+                const select = card.querySelector('.format-select');
+                let weight = 'Не указан';
+                let price = '0';
+                if (select && select.selectedOptions.length > 0) {
+                    const selectedOption = select.selectedOptions[0];
+                    weight = selectedOption.dataset.weight || selectedOption.textContent;
+                    price = select.value;
+                }
+                if (modalProductInfo) modalProductInfo.textContent = `${name} (${weight}) — ${price} ₽`;
+                modal.classList.add('open');
+            });
+        });
+
+        if (closeModal) closeModal.addEventListener('click', () => modal.classList.remove('open'));
+        window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+
+        if (oneClickForm) {
+            oneClickForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Спасибо за заказ! Наш пчеловод свяжется с вами в течение 10 минут для подтверждения.');
+                modal.classList.remove('open');
+                oneClickForm.reset();
+            });
+        }
+    }
+
+    // Первичная отрисовка состояния на загрузке любой страницы сайта
     Cart.notify();
+    Fav.notify();
 });
