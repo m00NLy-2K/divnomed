@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система привилегий и скидки — Дивно Мёд</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .discount-hero {
+            background: linear-gradient(rgba(61, 23, 2, 0.6), rgba(61, 23, 2, 0.6)), url('images/hero.jpg') center/cover no-repeat;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .discount-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+            margin-bottom: 80px;
+        }
+
+        .discount-card {
+            background: #ffffff;
+            border: 1px solid #eae4de;
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .discount-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-color);
+            box-shadow: 0 15px 35px rgba(194, 120, 3, 0.08);
+        }
+
+        .discount-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+
+        .discount-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .discount-card p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 992px) {
+            .discount-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .discount-grid { grid-template-columns: 1fr; gap: 20px; }
+            .discount-hero { padding: 60px 0; }
+        }
+        .tier-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .tier-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eae4de;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+        
+        .tier-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .tier-val {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            
+            <a href="index.html" class="logo" style="text-decoration: none;">
+                <span class="logo-text">Дивно Мёд</span>
+            </a>
+
+            <nav class="main-nav">
+                <a href="index.html">Главная</a>
+                <a href="index.html#catalog">Каталог</a>
+                <a href="discounts.html" style="color: var(--primary-color); font-weight: 700;">Скидки</a>
+                <a href="about.html">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+
+            <div class="header-actions">
+                
+                <a href="login.html" id="authLink" class="action-icon" title="Личный кабинет">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span id="authText" style="display: none;">Войти</span>
+                </a>
+
+                <div class="action-icon fav-widget" title="Избранное">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span class="badge" id="fav-count">0</span>
+                </div>
+
+                <div class="action-icon cart-widget" id="cartWidget" title="Корзина">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span class="badge" id="cart-count">0</span>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <section class="discount-hero">
+        <div class="container">
+            <h1 class="serif-font" style="font-size: 3.5rem; margin-bottom: 15px;">Система привилегий</h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; opacity: 0.9;">Честные скидки для тех, кто ценит настоящий кочевой мёд и выбирает качество без компромиссов.</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <!-- Акция 1: Мгновенные скидки -->
+            <div class="discount-card">
+                <div class="discount-value">до 15%</div>
+                <h3>Мгновенная скидка</h3>
+                <p style="margin-bottom: 15px;">Применяется автоматически в корзине в зависимости от суммы вашего разового заказа:</p>
+                <ul class="tier-list">
+                    <li><span>от 5 000 ₽</span><span class="tier-val">5%</span></li>
+                    <li><span>от 10 000 ₽</span><span class="tier-val">7%</span></li>
+                    <li><span>от 20 000 ₽</span><span class="tier-val">10%</span></li>
+                    <li><span>от 30 000 ₽</span><span class="tier-val">15%</span></li>
+                </ul>
+                <a href="index.html#catalog" class="btn btn-primary" style="width: 100%; margin-top: auto;">Перейти к покупкам</a>
+            </div>
+
+            <!-- Акция 2: Накопительные скидки -->
+            <div class="discount-card">
+                <div class="discount-value">до 10%</div>
+                <h3>Система лояльности</h3>
+                <p style="margin-bottom: 15px;">Суммирует все ваши оплаченные покупки через Личный кабинет и дает постоянную выгоду:</p>
+                <ul class="tier-list">
+                    <li><span>от 5 000 ₽</span><span class="tier-val">3%</span></li>
+                    <li><span>от 10 000 ₽</span><span class="tier-val">5%</span></li>
+                    <li><span>от 20 000 ₽</span><span class="tier-val">7%</span></li>
+                    <li><span>от 30 000 ₽</span><span class="tier-val">10%</span></li>
+                </ul>
+                <a href="login.html" class="btn btn-secondary-outline" style="width: 100%; border-color: #eae4de; color: var(--dark-bg); margin-top: auto;">Войти в кабинет</a>
+            </div>
+
+            <!-- Акция 3: Подарок -->
+            <div class="discount-card">
+                <div class="discount-value">3 = 4</div>
+                <h3>Набор дегустатора</h3>
+                <p style="margin-bottom: 15px;">Соберите в корзине любые три баночки мёда объемом по <strong>0.5 л</strong>, и мы заботливо добавим к вашему заказу четвертую — баночку нашего солнечного <strong>Подсолнечного мёда</strong> абсолютно бесплатно.</p>
+                <a href="index.html#catalog" class="btn btn-primary" style="width: 100%; margin-top: auto;">Собрать набор</a>
+            </div>
+
+        <div style="background: #fdfbf7; padding: 40px; border-radius: 16px; border: 1px solid #eae4de; margin-bottom: 80px; text-align: center;">
+            <h3 class="serif-font" style="font-size: 24px; margin-bottom: 15px;">Бесплатная доставка</h3>
+            <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto;">При сумме заказа от <strong>3 000 ₽</strong> (с учетом всех примененных скидок) мы берем расходы на доставку СДЭК до пункта выдачи или Почтой России на себя.</p>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p class="serif-font" style="font-size: 24px; margin-bottom: 10px;">Дивно Мёд</p>
+            <p>&copy; 2026 Кочевая пасека. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

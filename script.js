@@ -303,15 +303,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. СТРАНИЦА КОРЗИНЫ (cart.html) И РАСЧЕТ ДОСТАВКИ
     // ============================================================
     const cartPageItemsContainer = document.getElementById('cartPageItems');
-    const checkoutForm = document.getElementById('checkoutForm');
     let currentDeliveryCost = 350; 
 
     Cart.onChange(items => {
         if (!cartPageItemsContainer) return;
         const isEmpty = items.length === 0;
         
-        if (document.getElementById('cartPageEmptyState')) document.getElementById('cartPageEmptyState').style.display = isEmpty ? 'block' : 'none';
-        if (document.getElementById('cartPageLayout')) document.getElementById('cartPageLayout').style.display = isEmpty ? 'none' : 'grid';
+        const emptyState = document.getElementById('cartPageEmptyState');
+        const layout = document.getElementById('cartPageLayout');
+        
+        if (emptyState) emptyState.style.display = isEmpty ? 'block' : 'none';
+        if (layout) layout.style.display = isEmpty ? 'none' : 'grid';
+        
         if (isEmpty) return;
 
         cartPageItemsContainer.innerHTML = items.map(it => `
@@ -328,13 +331,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const updateSummary = () => {
             const subtotal = Cart.totalPrice(items);
-            let delivery = subtotal >= 3000 ? 0 : currentDeliveryCost;
-            const total = subtotal + delivery;
+            
+            // Расчет скидки
+            let discountPercent = 0;
+            if (subtotal >= 30000) discountPercent = 15;
+            else if (subtotal >= 20000) discountPercent = 10;
+            else if (subtotal >= 10000) discountPercent = 7;
+            else if (subtotal >= 5000) discountPercent = 5;
+
+            const discountAmount = Math.floor(subtotal * (discountPercent / 100));
+            const subtotalWithDiscount = subtotal - discountAmount;
+            const delivery = subtotalWithDiscount >= 3000 ? 0 : currentDeliveryCost;
+            const total = subtotalWithDiscount + delivery;
 
             if (document.getElementById('cartSummaryItemsCount')) document.getElementById('cartSummaryItemsCount').textContent = Cart.totalCount(items);
             if (document.getElementById('cartSummarySubtotal')) document.getElementById('cartSummarySubtotal').textContent = formatPrice(subtotal);
             if (document.getElementById('cartSummaryTotal')) document.getElementById('cartSummaryTotal').textContent = formatPrice(total);
             if (document.getElementById('cartSummaryDelivery')) document.getElementById('cartSummaryDelivery').textContent = delivery === 0 ? 'Бесплатно' : formatPrice(delivery);
+
+            // Скидка в DOM
+            const discountRow = document.getElementById('cartSummaryDiscountRow');
+            if (discountRow) {
+                if (discountPercent > 0) {
+                    discountRow.style.display = 'flex';
+                    document.getElementById('cartSummaryDiscountPercent').textContent = discountPercent;
+                    document.getElementById('cartSummaryDiscountAmount').textContent = `-${formatPrice(discountAmount)}`;
+                } else {
+                    discountRow.style.display = 'none';
+                }
+            }
+
+            // Подарок в DOM
+            const halfLiterCount = items.filter(it => it.weight === '0.5 л' || it.weight === '500 г').reduce((sum, it) => sum + it.qty, 0);
+            const giftRow = document.getElementById('cartSummaryGiftRow');
+            if (giftRow) {
+                giftRow.style.display = halfLiterCount >= 3 ? 'flex' : 'none';
+            }
         };
 
         updateSummary();
@@ -349,69 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-
-    if (cartPageItemsContainer) {
-        cartPageItemsContainer.addEventListener('click', (e) => {
-            const row = e.target.closest('.cart-table-row');
-            if (!row) return;
-            const { id, weight } = row.dataset;
-            const current = Cart.read().find(it => it.id === id && it.weight === weight);
-            if (!current) return;
-            if (e.target.closest('.cart-qty-plus')) Cart.setQty(id, weight, current.qty + 1);
-            else if (e.target.closest('.cart-qty-minus')) Cart.setQty(id, weight, current.qty - 1);
-        });
-    }
-
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const items = Cart.read();
-            if (items.length === 0) return showToast('Корзина пуста.','success');
-
-            const token = localStorage.getItem('divno_auth_token');
-            if (!token) {
-                showToast('Пожалуйста, войдите в аккаунт или зарегистрируйтесь для оформления заказа.', 'success');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const phone = document.getElementById('checkoutPhone').value;
-            
-            // === ЖЕЛЕЗОБЕТОННАЯ ПРОВЕРКА НОМЕРА ===
-            // Метод replace(/\D/g, '') удаляет все нечисловые символы (+, пробелы, скобки, тире).
-            // Оставшаяся строка содержит только цифры.
-            const digitsOnly = phone.replace(/\D/g, '');
-            
-            // Полный российский номер телефона всегда содержит 11 цифр (например, 79991234567)
-            if (digitsOnly.length !== 11) {
-                showToast('Пожалуйста, введите номер телефона полностью (10 цифр после +7)', 'error');
-                return; // Полностью останавливаем выполнение функции, fetch не сработает
-            }
-            // =====================================
-
-            const address = document.getElementById('checkoutAddress').value;
-            const subtotal = Cart.totalPrice(items);
-            const delivery = subtotal >= 3000 ? 0 : currentDeliveryCost;
-            const total = subtotal + delivery;
-
-            try {
-                const response = await fetch(`${API_URL}/orders`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ phone, address, total_price: total, items })
-                });
-
-                if (response.ok) {
-                    showToast('Заказ успешно оформлен! Вы можете отслеживать его в Личном кабинете.', 'success');
-                    Cart.clear();
-                    window.location.href = 'profile.html';
-                } else {
-                    const data = await response.json();
-                    showToast('Ошибка: ' + data.detail,'error');
-                }
-            } catch (err) { showToast('Ошибка соединения с сервером.', 'error'); }
-        });
-    }
 
     // ============================================================
     // 7. ЛОГИН, РЕГИСТРАЦИЯ И ПРОФИЛЬ (СВЯЗЬ С API)
@@ -588,6 +557,117 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(tab.dataset.target + 'Form')?.classList.add('active');
         });
     });
+
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.target + 'Form')?.classList.add('active');
+        });
+    });
+
+    // ============================================================
+    // ОТПРАВКА ЗАКАЗА НА СЕРВЕР (CHECKOUT)
+    // ============================================================
+    const checkoutForm = document.getElementById('checkoutForm');
+    
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Останавливаем перезагрузку страницы!
+            
+            const items = Cart.read();
+            if (items.length === 0) return showToast('Корзина пуста.','error');
+
+            const token = localStorage.getItem('divno_auth_token');
+            if (!token) {
+                showToast('Пожалуйста, войдите в аккаунт или зарегистрируйтесь для оформления заказа.', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+
+            const phone = document.getElementById('checkoutPhone').value;
+            
+            // === ЖЕЛЕЗОБЕТОННАЯ ПРОВЕРКА НОМЕРА ===
+            const digitsOnly = phone.replace(/\D/g, '');
+            if (digitsOnly.length !== 11) {
+                showToast('Пожалуйста, введите номер телефона полностью (10 цифр после +7)', 'error');
+                return; 
+            }
+            // =====================================
+
+            const address = document.getElementById('checkoutAddress').value;
+            
+            // === РАСЧЕТ С УЧЕТОМ НОВЫХ СКИДОК ===
+            const subtotal = Cart.totalPrice(items);
+            
+            let discountPercent = 0;
+            if (subtotal >= 30000) discountPercent = 15;
+            else if (subtotal >= 20000) discountPercent = 10;
+            else if (subtotal >= 10000) discountPercent = 7;
+            else if (subtotal >= 5000) discountPercent = 5;
+            
+            const discountAmount = Math.floor(subtotal * (discountPercent / 100));
+            const subtotalWithDiscount = subtotal - discountAmount;
+            
+            // Доставка (считается от суммы УЖЕ СО СКИДКОЙ)
+            let delivery = subtotalWithDiscount >= 3000 ? 0 : (typeof currentDeliveryCost !== 'undefined' ? currentDeliveryCost : 350);
+            
+            // Итоговая сумма, которая уйдет в базу данных
+            const total = subtotalWithDiscount + delivery;
+
+            // === ВШИВАЕМ ПОДАРОК В ФИНАЛЬНЫЙ ЧЕК ===
+            const finalItems = [...items]; // Делаем копию корзины для отправки на сервер
+            const halfLiterCount = finalItems.filter(it => it.weight === '0.5 л' || it.weight === '500 г').reduce((sum, it) => sum + it.qty, 0);
+            
+            if (halfLiterCount >= 3) {
+                finalItems.push({
+                    id: 'gift_sunflower',
+                    name: '🎁 Подсолнечный мёд (Подарок)',
+                    weight: '0.5 л',
+                    price: 0,
+                    qty: 1
+                });
+            }
+            // ========================================
+
+            try {
+                // Блокируем кнопку, чтобы не нажали дважды
+                // Блокируем кнопку, чтобы не нажали дважды
+                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Оформляем...';
+                }
+
+                const response = await fetch(`${API_URL}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ phone, address, total_price: total, items: finalItems }) // <-- ВОТ ЗДЕСЬ ИЗМЕНЕНИЕ
+                });
+
+                if (response.ok) {
+                    showToast('Заказ успешно оформлен! Вы можете отслеживать его в Личном кабинете.', 'success');
+                    Cart.clear();
+                    setTimeout(() => window.location.href = 'profile.html', 1500);
+                } else {
+                    const data = await response.json();
+                    showToast('Ошибка: ' + data.detail,'error');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Подтвердить заказ';
+                    }
+                }
+            } catch (err) { 
+                showToast('Ошибка соединения с сервером.', 'error'); 
+                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Подтвердить заказ';
+                }
+            }
+        });
+    }
 
     Cart.notify();
     Fav.notify();
