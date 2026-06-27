@@ -1047,3 +1047,52 @@ h1, h2, h3, .hero-title, .section-title {
         padding: 40px 0;
     }
 }
+/* --- УЛУЧШЕНИЯ ДЛЯ СТРАНИЦЫ ОФОРМЛЕНИЯ ЗАКАЗА --- */
+.delivery-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.delivery-label {
+    border: 1px solid #eae4de;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.delivery-label:hover {
+    border-color: var(--primary-color);
+}
+
+.post-label {
+    grid-column: 1 / -1; /* Почта всегда занимает всю ширину */
+}
+
+/* Мобильная адаптация корзины и чекаута */
+@media (max-width: 992px) {
+    #cartPageLayout { 
+        grid-template-columns: 1fr !important; /* Принудительно выстраиваем в одну колонку */
+    }
+    
+    .cart-right-col {
+        order: -1; /* На телефоне "Ваш заказ" поднимаем НАВЕРХ над формой */
+        margin-bottom: 20px;
+    }
+    
+    .delivery-options-grid {
+        grid-template-columns: 1fr; /* На телефоне способы доставки друг под другом */
+    }
+    
+    /* Делаем отступы формы внутри карточки чуть меньше для телефона */
+    #checkoutForm {
+        padding: 20px !important; 
+    }
+}
