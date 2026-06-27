@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления — Дивно Мёд</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-table {
+            width: 100%; border-collapse: collapse; background: white; 
+            border-radius: 8px; overflow: hidden; border: 1px solid #eae4de; margin-top: 30px;
+        }
+        .admin-table th, .admin-table td {
+            padding: 18px; text-align: left; border-bottom: 1px solid #f3ebe3; font-size: 14px;
+        }
+        .admin-table th {
+            background: #fdfbf7; font-weight: 600; color: var(--dark-bg);
+        }
+        .status-select {
+            padding: 6px 12px; border-radius: 20px; border: 1px solid #eae4de; 
+            font-family: inherit; font-size: 13px; font-weight: 600; background: #fdfbf7; cursor: pointer;
+        }
+        .order-items-list {
+            margin: 0; padding: 0; list-style: none; color: #555; font-size: 13px;
+        }
+    </style>
+</head>
+<body style="background: #faf8f5;">
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo"><span class="logo-text">Панель управления</span></a>
+            <nav class="main-nav">
+                <a href="index.html">Перейти на сайт</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 60px 0 100px; min-height: 75vh;">
+        <h1 class="section-title" style="text-align: left; margin-bottom: 10px;">Все заказы пасеки</h1>
+        <p style="color: var(--text-muted); margin: 0;">Просмотр поступающих заявок и изменение статусов обработки логистики.</p>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Заказ</th>
+                    <th>Клиент / Контакты</th>
+                    <th>Состав заказа</th>
+                    <th>Адрес доставки</th>
+                    <th>Сумма</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody id="adminOrdersRows">
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">Загрузка списка заказов...</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_URL = 'http://127.0.0.1:8000/api';
+            const rowsContainer = document.getElementById('adminOrdersRows');
+            const token = localStorage.getItem('divno_auth_token');
+
+            if (!token) {
+                alert('Доступ запрещен. Пожалуйста, авторизуйтесь.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const loadAdminOrders = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/admin/orders`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (res.status === 403) {
+                        alert('У вас нет прав администратора!');
+                        window.location.href = 'index.html'; // Выгоняем на главную
+                        return;
+                    }
+                    if (!res.ok) {
+                        rowsContainer.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Ошибка доступа.</td></tr>`;
+                        return;
+                    }
+
+                    const orders = await res.json();
+                    
+                    if (orders.length === 0) {
+                        rowsContainer.innerHTML = `<tr><td colspan="6" style="text-align:center;">Заказов в базе данных пока нет.</td></tr>`;
+                        return;
+                    }
+
+                    rowsContainer.innerHTML = orders.map(order => `
+                        <tr>
+                            <td>
+                                <strong>#${order.id}</strong>
+                                <div style="color:#888; font-size:12px; margin-top:4px;">${order.date}</div>
+                            </td>
+                            <td>
+                                <div style="font-weight:600; color:var(--dark-bg);">${order.customer_name}</div>
+                                <div style="color:#666; margin-top:4px;">${order.phone}</div>
+                            </td>
+                            <td>
+                                <ul class="order-items-list">
+                                    ${order.items.map(it => `<li>${it.name} (${it.weight}) — ${it.qty} шт.</li>`).join('')}
+                                </ul>
+                            </td>
+                            <td style="max-width:250px; color:#555; font-size:13px; line-height:1.4;">
+                                ${order.address}
+                            </td>
+                            <td style="font-weight:700; color:var(--dark-bg);">
+                                ${order.total.toLocaleString('ru-RU')} ₽
+                            </td>
+                            <td>
+                                <select class="status-select" data-order-id="${order.id}">
+                                    <option value="В обработке" ${order.status === 'В обработке' ? 'selected' : ''}>В обработке</option>
+                                    <option value="Отправлен СДЭК" ${order.status === 'Отправлен СДЭК' ? 'selected' : ''}>Отправлен СДЭК</option>
+                                    <option value="Выполнен" ${order.status === 'Выполнен' ? 'selected' : ''}>Выполнен</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    document.querySelectorAll('.status-select').forEach(select => {
+                        select.addEventListener('change', async (e) => {
+                            const orderId = e.target.dataset.orderId;
+                            const newStatus = e.target.value;
+
+                            try {
+                                const updateRes = await fetch(`${API_URL}/admin/orders/${orderId}/status`, {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify({ status: newStatus })
+                                });
+
+                                if (!updateRes.ok) {
+                                    if(updateRes.status === 403) alert('У вас нет прав для изменения статуса.');
+                                    else alert('Не удалось обновить статус на сервере.');
+                                }
+                            } catch (err) { alert('Ошибка соединения с бэкендом.'); }
+                        });
+                    });
+
+                } catch (e) {
+                    rowsContainer.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Ошибка соединения с сервером.</td></tr>`;
+                }
+            };
+
+            loadAdminOrders();
+        });
+    </script>
+</body>
+</html>

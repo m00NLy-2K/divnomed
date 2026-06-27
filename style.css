@@ -515,3 +515,83 @@ h1, h2, h3, .hero-title, .section-title {
     .cart-table-row { flex-wrap: wrap; }
     .cart-table-unit-price { display: none; }
 }
+
+/* =========================================
+   СТРАНИЦА АВТОРИЗАЦИИ (login.html)
+   ========================================= */
+.auth-card { 
+    background: white; padding: 45px; border-radius: 12px; 
+    border: 1px solid #eae4de; box-shadow: var(--card-shadow); 
+    width: 100%; max-width: 420px; 
+}
+.auth-tabs { 
+    display: flex; margin-bottom: 30px; border-bottom: 2px solid #f3ebe3; 
+}
+.auth-tab { 
+    flex: 1; text-align: center; padding: 12px; background: none; border: none; 
+    font-size: 1.2rem; font-family: 'Cormorant Garamond', serif; font-weight: 700; 
+    color: #a8a29e; cursor: pointer; transition: 0.3s; outline: none;
+}
+.auth-tab.active { 
+    color: var(--dark-bg); border-bottom: 2px solid var(--primary-color); margin-bottom: -2px; 
+}
+.auth-form { 
+    display: none; flex-direction: column; 
+}
+.auth-form.active { 
+    display: flex; 
+}
+.auth-form .form-group { margin-bottom: 20px; }
+.auth-form label { 
+    font-size: 13px; font-weight: 600; margin-bottom: 8px; display: block; color: var(--dark-bg);
+}
+.form-control {
+    width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 15px;
+}
+
+/* Адаптив для профиля */
+@media (max-width: 768px) {
+    #profileGrid { grid-template-columns: 1fr !important; }
+    /* Добавляем воздух перед подвалом на мобильных телефонах */
+    main.container {
+        padding-bottom: 60px !important; 
+    }
+    .article-sidebar {
+        margin-bottom: 40px;
+    }
+}
+
+/* =========================================
+   КРАСИВЫЙ СЧЕТЧИК ТОВАРОВ В КОРЗИНЕ
+   ========================================= */
+.cart-line-qty {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 90px; /* Жестко ограничиваем ширину, чтобы не растягивался */
+    background: #fdfbf7; /* Светлый фон */
+    border: 1px solid #eae4de; /* Тонкая рамка */
+    border-radius: 30px; /* Делаем форму закругленной капсулы */
+    padding: 2px 8px;
+    margin-top: 8px;
+}
+
+.cart-line-qty button {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0 5px;
+    transition: color 0.2s;
+}
+
+.cart-line-qty button:hover {
+    color: var(--primary-color);
+}
+
+.cart-line-qty span {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark-bg);
+}

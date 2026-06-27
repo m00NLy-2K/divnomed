@@ -22,14 +22,17 @@
                 <a href="about.html">О пасеке</a>
                 <a href="faq.html">Вопросы</a>
             </nav>
-            <div class="header-actions">
-                <div class="fav-widget" style="display: inline-block; margin-right: 20px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                    <span class="action-text">Избранное</span> (<span id="fav-count">0</span>)
-                </div>
-                <div class="cart-widget" id="cartWidget" style="display: inline-block; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
-                    <span class="action-text">Корзина</span> (<span id="cart-count">0</span>)
-                </div>
-            </div>
+            <div class="header-actions" style="display: flex; align-items: center; gap: 25px; font-weight: 600; font-size: 0.95rem;">
+    <a href="login.html" id="authLink" style="text-decoration: none; color: inherit; cursor: pointer; transition: color 0.3s;">
+        <span id="authText">Войти</span>
+    </a>
+    <div class="fav-widget" style="cursor: pointer; transition: color 0.3s;">
+        Избранное (<span id="fav-count">0</span>)
+    </div>
+    <div class="cart-widget" id="cartWidget" style="cursor: pointer; transition: color 0.3s;">
+        Корзина (<span id="cart-count">0</span>)
+    </div>
+</div>
         </div>
     </header>
 
@@ -49,22 +52,45 @@
                 </div>
 
                 <h2 class="serif-font" style="margin-bottom: 25px; font-size: 28px;">Данные для доставки</h2>
+                
+
                 <form id="checkoutForm" style="background: white; padding: 35px; border-radius: 12px; border: 1px solid #eae4de;">
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Имя и Фамилия</label>
-                        <input type="text" placeholder="Иван Иванов" required style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px;">
+                        <input type="text" id="checkoutName" required style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px;">
                     </div>
+                    
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Контактный телефон</label>
-                        <input type="tel" placeholder="+7 (999) 000-00-00" required style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px;">
+                        <input type="tel" id="checkoutPhone" required placeholder="+7..." style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px;">
                     </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Способ доставки</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <label style="flex: 1; border: 1px solid #eae4de; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500;">
+                                <input type="radio" name="deliveryMethod" value="cdek_pickup" checked style="accent-color: var(--primary-color);"> СДЭК (Пункт выдачи)
+                            </label>
+                            <label style="flex: 1; border: 1px solid #eae4de; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500;">
+                                <input type="radio" name="deliveryMethod" value="cdek_courier" style="accent-color: var(--primary-color);"> СДЭК (Курьер)
+                            </label>
+                        </div>
+                        <label style="display: flex; border: 1px solid #eae4de; padding: 12px; border-radius: 8px; cursor: pointer; align-items: center; gap: 10px; font-size: 14px; font-weight: 500;">
+                            <input type="radio" name="deliveryMethod" value="post" style="accent-color: var(--primary-color);"> Почта России (Посылка)
+                        </label>
+                    </div>
+                    
                     <div style="margin-bottom: 25px;">
-                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Адрес доставки (СДЭК или Почта)</label>
-                        <textarea placeholder="Город, улица, дом, индекс" required style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px; min-height: 120px;"></textarea>
+                        <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Адрес доставки</label>
+                        <input type="text" id="checkoutAddress" required placeholder="Начните вводить город, улицу, дом..." style="width: 100%; padding: 15px; border: 1px solid #eae4de; border-radius: 8px; font-family: inherit; font-size: 16px;">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 18px;">Подтвердить заказ</button>
+                    <div id="cdek-map" style="width: 100%; height: 400px; display: none; margin-bottom: 20px; border: 1px solid #eae4de;"></div>
+
+                    <input type="hidden" id="cdek-pvz-id" name="cdek_pvz_id">
+                    <input type="hidden" id="cdek-pvz-address" name="cdek_pvz_address">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 18px; cursor: pointer;">Подтвердить заказ</button>
                 </form>
-            </div>
+
 
             <div class="cart-right-col">
                 <div class="cart-summary-box">
@@ -111,6 +137,43 @@
         </div>
     </div>
 
+    
+    <!-- 1. Стили Dadata -->
+    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css" rel="stylesheet" />
+    
+    <!-- 2. Базовый jQuery (ОДИН РАЗ!) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- 3. Плагин Dadata (строго после jQuery!) -->
+    <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js"></script>
+    
+    <!-- 4. Инициализация поиска -->
+    <script>
+        $(document).ready(function() {
+            if ($("#checkoutAddress").length) {
+                $("#checkoutAddress").suggestions({
+                    token: "9dd57d7ae8852be7937c3d9bd2125f4b67144edf", // <-- СЮДА ТВОЙ КЛЮЧ
+                    type: "ADDRESS",
+                    minChars: 2
+                });
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Применяем маску ко всем полям телефона
+            $("#checkoutPhone, #profilePhoneInput").inputmask({
+                "mask": "+7 (999) 999-99-99",
+                "placeholder": "+7 (___) ___-__-__",
+                "showMaskOnHover": false
+            });
+        });
+    </script>
+
+    
+    <!-- 5. Твой основной скрипт сайта загружается самым последним -->
     <script src="script.js"></script>
 </body>
 </html>

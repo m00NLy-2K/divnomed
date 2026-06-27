@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный Кабинет — Дивно Мёд</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="index.html" class="logo"><span class="logo-text">Дивно Мёд</span></a>
+            
+            <nav class="main-nav">
+                <a href="index.html">Главная</a>
+                <a href="index.html#catalog">Каталог</a>
+                <a href="about.html">О пасеке</a>
+                <a href="faq.html">Вопросы</a>
+            </nav>
+            
+            <div class="header-actions" style="display: flex; align-items: center; gap: 25px; font-weight: 600; font-size: 0.95rem;">
+                <div class="fav-widget" style="cursor: pointer; transition: color 0.3s;">
+                    Избранное (<span id="fav-count">0</span>)
+                </div>
+                <div class="cart-widget" id="cartWidget" style="cursor: pointer; transition: color 0.3s;">
+                    Корзина (<span id="cart-count">0</span>)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 60px 0 100px; min-height: 60vh;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h1 class="section-title" style="margin-bottom: 5px; text-align: left;">Личный кабинет</h1>
+                <p class="section-subtitle" style="text-align: left; margin: 0;">Добро пожаловать, <strong id="profileNameDisplay">...</strong>!</p>
+            </div>
+            <button id="logoutBtn" class="btn" style="background: transparent; border: 1px solid #d1cedc; color: var(--text-muted); padding: 10px 20px; cursor: pointer;">Выйти из аккаунта</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px;" id="profileGrid">
+            
+            <form id="profileForm" style="background: white; padding: 30px; border-radius: 12px; border: 1px solid #eae4de; box-shadow: var(--card-shadow); height: fit-content;">
+                <h3 class="serif-font" style="font-size: 22px; margin-bottom: 20px;">Мои данные</h3>
+                
+                <p style="margin-bottom: 15px; color: var(--text-muted); font-size: 14px;"><strong>Email:</strong> <span id="profileEmailText">Загрузка...</span></p>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; font-size: 12px; font-weight: 600; margin-bottom: 5px;">Имя</label>
+                    <input type="text" id="profileNameInput" class="form-control" style="padding: 10px; font-size: 14px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; font-size: 12px; font-weight: 600; margin-bottom: 5px;">Телефон</label>
+                    <input type="tel" id="profilePhoneInput" class="form-control" style="padding: 10px; font-size: 14px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; font-size: 12px; font-weight: 600; margin-bottom: 5px;">Адрес доставки</label>
+                    <input type="text" id="profileAddressInput" class="form-control" style="padding: 10px; font-size: 14px;" placeholder="Город, улица...">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; cursor: pointer;">Сохранить изменения</button>
+            </form>
+
+            <div style="background: white; padding: 30px; border-radius: 12px; border: 1px solid #eae4de; box-shadow: var(--card-shadow);">
+                <h3 class="serif-font" style="font-size: 22px; margin-bottom: 20px;">История заказов</h3>
+                <div id="ordersContainer" style="text-align: center; color: var(--text-muted); padding: 40px 0; border: 1px dashed #eae4de; border-radius: 8px;">
+                    Загрузка заказов...
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container text-center"><p>&copy; 2026 Кочевая пасека "Дивно Мёд". Все права защищены.</p></div>
+    </footer>
+
+    <div id="cartDrawerOverlay"></div>
+    <div id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3 class="serif-font" style="font-size: 26px; margin: 0; color: var(--dark-bg);">Ваша корзина</h3>
+            <button id="cartDrawerClose" style="background:none; border:none; font-size:32px; color: var(--text-muted); cursor:pointer;">&times;</button>
+        </div>
+        <div id="cartDrawerBody"></div>
+        <div id="cartDrawerFooter">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.2rem; color: var(--dark-bg);">
+                <span>Итого:</span>
+                <span id="cartDrawerSubtotal">0 ₽</span>
+            </div>
+            <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            if ($("#profileAddressInput").length) {
+                $("#profileAddressInput").suggestions({
+                    token: "9dd57d7ae8852be7937c3d9bd2125f4b67144edf",
+                    type: "ADDRESS",
+                    minChars: 2
+                });
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Применяем маску ко всем полям телефона
+            $("#checkoutPhone, #profilePhoneInput").inputmask({
+                "mask": "+7 (999) 999-99-99",
+                "placeholder": "+7 (___) ___-__-__",
+                "showMaskOnHover": false
+            });
+        });
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
