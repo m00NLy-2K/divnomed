@@ -13,22 +13,42 @@
 
     <header class="site-header">
         <div class="container header-wrap">
-            <a href="index.html" class="logo">
+            
+            <!-- Логотип -->
+            <a href="index.html" class="logo" style="text-decoration: none;">
                 <span class="logo-text">Дивно Мёд</span>
             </a>
+
+            <!-- Навигация -->
             <nav class="main-nav">
-                <a href="index.html">Главная</a>
+                <a href="index.html" class="active">Главная</a>
                 <a href="index.html#catalog">Каталог</a>
                 <a href="about.html">О пасеке</a>
                 <a href="faq.html">Вопросы</a>
             </nav>
-            <div class="header-actions" style="display: flex; align-items: center; gap: 25px; font-weight: 600; font-size: 0.95rem;">
-                <a href="login.html" id="authLink" style="text-decoration: none; color: inherit; cursor: pointer;">
-                    <span id="authText">Войти</span>
+
+            <!-- Иконки действий -->
+            <div class="header-actions">
+                
+                <!-- Иконка Профиля / Входа -->
+                <a href="login.html" id="authLink" class="action-icon" title="Личный кабинет">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <!-- Скрытый текст, чтобы твой JS не сломался -->
+                    <span id="authText" style="display: none;">Войти</span>
                 </a>
-                <div class="cart-widget" id="cartWidget" style="cursor: pointer;">
-                    Корзина (<span id="cart-count">0</span>)
+
+                <!-- Иконка Избранного -->
+                <div class="action-icon fav-widget" title="Избранное">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span class="badge" id="fav-count">0</span>
                 </div>
+
+                <!-- Иконка Корзины -->
+                <div class="action-icon cart-widget" id="cartWidget" title="Корзина">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span class="badge" id="cart-count">0</span>
+                </div>
+
             </div>
         </div>
     </header>
@@ -49,6 +69,9 @@
                 <div class="form-group">
                     <label>Пароль</label>
                     <input type="password" class="form-control" required placeholder="••••••••">
+                    <div style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
+                        <a href="#" id="forgotPasswordBtn" style="font-size: 13px; color: var(--primary-color); text-decoration: none;">Забыли пароль?</a>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Войти в кабинет</button>
             </form>
@@ -93,7 +116,63 @@
             <a href="cart.html" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Перейти к оформлению</a>
         </div>
     </div>
-
+    <div class="modal-overlay" id="forgotPasswordModal">
+    <div class="modal-content">
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+            <h3 class="serif-font" style="margin-bottom: 15px; font-size: 24px;">Сброс пароля</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Введите email, указанный при регистрации, и мы отправим ссылку для восстановления.</p>
+            
+            <form id="forgotForm" style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="email" id="forgotEmail" placeholder="Ваш Email" required style="padding: 12px; border-radius: 8px; border: 1px solid #eae4de; font-family: inherit;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px;">Отправить ссылку</button>
+            </form>
+        </div>
+    </div>
     <script src="script.js"></script>
+
+    <script>
+        // Логика управления окном "Забыли пароль"
+        const forgotModal = document.getElementById('forgotPasswordModal');
+
+        document.getElementById('forgotPasswordBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotModal.classList.add('active');
+        });
+
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            forgotModal.classList.remove('active');
+        });
+
+        // Закрытие по клику вне окна
+        forgotModal.addEventListener('click', (e) => {
+            if (e.target === forgotModal) forgotModal.classList.remove('active');
+        });
+
+        // Отправка запроса на бэкенд
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value;
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showToast("Ссылка отправлена! Проверьте терминал FastAPI.", "success");
+                    forgotModal.classList.remove('active');
+                    document.getElementById('forgotEmail').value = ''; // Очищаем поле
+                } else {
+                    showToast(result.error || "Ошибка при отправке", "error");
+                }
+            } catch (error) {
+                showToast("Ошибка соединения с сервером", "error");
+            }
+        });
+    </script>
 </body>
 </html>

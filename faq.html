@@ -13,26 +13,43 @@
 
     <header class="site-header">
         <div class="container header-wrap">
-            <a href="index.html" class="logo">
+            
+            <!-- Логотип -->
+            <a href="index.html" class="logo" style="text-decoration: none;">
                 <span class="logo-text">Дивно Мёд</span>
             </a>
+
+            <!-- Навигация -->
             <nav class="main-nav">
-                <a href="index.html">Главная</a>
+                <a href="index.html" class="active">Главная</a>
                 <a href="index.html#catalog">Каталог</a>
                 <a href="about.html">О пасеке</a>
-                <a href="faq.html" class="active">Вопросы</a>
+                <a href="faq.html">Вопросы</a>
             </nav>
-            <div class="header-actions" style="display: flex; align-items: center; gap: 25px; font-weight: 600; font-size: 0.95rem;">
-    <a href="login.html" id="authLink" style="text-decoration: none; color: inherit; cursor: pointer; transition: color 0.3s;">
-        <span id="authText">Войти</span>
-    </a>
-    <div class="fav-widget" style="cursor: pointer; transition: color 0.3s;">
-        Избранное (<span id="fav-count">0</span>)
-    </div>
-    <div class="cart-widget" id="cartWidget" style="cursor: pointer; transition: color 0.3s;">
-        Корзина (<span id="cart-count">0</span>)
-    </div>
-</div>
+
+            <!-- Иконки действий -->
+            <div class="header-actions">
+                
+                <!-- Иконка Профиля / Входа -->
+                <a href="login.html" id="authLink" class="action-icon" title="Личный кабинет">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <!-- Скрытый текст, чтобы твой JS не сломался -->
+                    <span id="authText" style="display: none;">Войти</span>
+                </a>
+
+                <!-- Иконка Избранного -->
+                <div class="action-icon fav-widget" title="Избранное">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span class="badge" id="fav-count">0</span>
+                </div>
+
+                <!-- Иконка Корзины -->
+                <div class="action-icon cart-widget" id="cartWidget" title="Корзина">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span class="badge" id="cart-count">0</span>
+                </div>
+
+            </div>
         </div>
     </header>
 

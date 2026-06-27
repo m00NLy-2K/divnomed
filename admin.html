@@ -11,21 +11,57 @@
     <style>
         .admin-table {
             width: 100%; border-collapse: collapse; background: white; 
-            border-radius: 8px; overflow: hidden; border: 1px solid #eae4de; margin-top: 30px;
+            border-radius: 8px; overflow: hidden; border: 1px solid #eae4de;
         }
         .admin-table th, .admin-table td {
-            padding: 18px; text-align: left; border-bottom: 1px solid #f3ebe3; font-size: 14px;
+            padding: 15px; text-align: left; border-bottom: 1px solid #f3ebe3; font-size: 14px;
         }
-        .admin-table th {
-            background: #fdfbf7; font-weight: 600; color: var(--dark-bg);
-        }
+        .admin-table th { background: #fdfbf7; font-weight: 600; color: var(--dark-bg); }
         .status-select {
-            padding: 6px 12px; border-radius: 20px; border: 1px solid #eae4de; 
-            font-family: inherit; font-size: 13px; font-weight: 600; background: #fdfbf7; cursor: pointer;
+            padding: 6px 12px; border-radius: 20px; border: 1px solid transparent; 
+            font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s;
         }
-        .order-items-list {
-            margin: 0; padding: 0; list-style: none; color: #555; font-size: 13px;
+        .order-items-list { margin: 0; padding: 0; list-style: none; color: #555; font-size: 13px; }
+        .admin-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .search-input { 
+            padding: 12px 15px; border-radius: 8px; border: 1px solid #eae4de; 
+            width: 100%; max-width: 500px; box-sizing: border-box; font-family: inherit; outline: none; transition: 0.3s; 
         }
+        .search-input:focus { border-color: var(--primary-color); }
+        .action-btn { 
+            background: none; border: none; font-size: 13px; font-weight: 600; color: #dc3545; 
+            cursor: pointer; transition: 0.2s; text-decoration: underline; padding: 5px 10px;
+        }
+        .action-btn:hover { color: #a71d2a; }
+
+        /* Надежные стили для кнопок админки (чтобы не пропадали) */
+        .btn-admin-outline {
+            background: transparent; color: #333; border: 2px solid #d1cedc; 
+            padding: 10px 20px; border-radius: 8px; font-weight: 600; 
+            font-family: inherit; cursor: pointer; transition: 0.2s; font-size: 14px;
+        }
+        .btn-admin-outline:hover { background: #f4f2f0; border-color: #bfae9e; }
+        
+        .btn-admin-danger {
+            background: #dc3545; color: white; border: none; 
+            padding: 10px 20px; border-radius: 8px; font-weight: 600; 
+            font-family: inherit; cursor: pointer; transition: 0.2s; font-size: 14px;
+        }
+        .btn-admin-danger:hover { background: #c82333; }
+
+        /* Стили для окна подтверждения удаления */
+        .confirm-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .confirm-overlay.active { display: flex; }
+        .confirm-modal {
+            background: white; padding: 30px; border-radius: 12px;
+            width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .confirm-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 25px; }
     </style>
 </head>
 <body style="background: #faf8f5;">
@@ -33,15 +69,18 @@
     <header class="site-header">
         <div class="container header-wrap">
             <a href="index.html" class="logo"><span class="logo-text">Панель управления</span></a>
-            <nav class="main-nav">
-                <a href="index.html">Перейти на сайт</a>
-            </nav>
+            <nav class="main-nav"><a href="index.html">Вернуться на сайт</a></nav>
         </div>
     </header>
 
-    <main class="container" style="padding: 60px 0 100px; min-height: 75vh;">
-        <h1 class="section-title" style="text-align: left; margin-bottom: 10px;">Все заказы пасеки</h1>
-        <p style="color: var(--text-muted); margin: 0;">Просмотр поступающих заявок и изменение статусов обработки логистики.</p>
+    <main class="container" style="padding: 40px 0 100px; min-height: 75vh;">
+        <h1 class="section-title" style="text-align: left; margin-bottom: 5px;">Все заказы пасеки</h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Просмотр заявок, изменение статусов и выгрузка базы.</p>
+
+        <div class="admin-controls">
+            <input type="text" id="searchOrderInput" class="search-input" placeholder="Поиск по номеру телефона или имени...">
+            <button id="exportCsvBtn" class="btn-admin-outline">Выгрузить в Excel (CSV)</button>
+        </div>
 
         <table class="admin-table">
             <thead>
@@ -51,16 +90,27 @@
                     <th>Состав заказа</th>
                     <th>Адрес доставки</th>
                     <th>Сумма</th>
-                    <th>Статус</th>
+                    <th>Статус / Управление</th>
                 </tr>
             </thead>
             <tbody id="adminOrdersRows">
-                <tr>
-                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">Загрузка списка заказов...</td>
-                </tr>
+                <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">Загрузка списка заказов...</td></tr>
             </tbody>
         </table>
     </main>
+
+    <div class="confirm-overlay" id="deleteConfirmModal">
+        <div class="confirm-modal">
+            <h3 class="serif-font" style="font-size: 24px; margin-top: 0; margin-bottom: 10px;">Удаление заказа</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Вы уверены, что хотите навсегда удалить этот заказ? Это действие нельзя отменить.</p>
+            <div class="confirm-buttons">
+                <button class="btn-admin-outline" id="cancelDeleteBtn">Отмена</button>
+                <button class="btn-admin-danger" id="confirmDeleteBtn">Да, удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -69,10 +119,17 @@
             const token = localStorage.getItem('divno_auth_token');
 
             if (!token) {
-                alert('Доступ запрещен. Пожалуйста, авторизуйтесь.');
                 window.location.href = 'login.html';
                 return;
             }
+
+            const getStatusStyle = (status) => {
+                if(status === 'В обработке') return 'background: #fff3cd; color: #856404; border-color: #ffeeba;';
+                if(status === 'Отправлен СДЭК') return 'background: #cce5ff; color: #004085; border-color: #b8daff;';
+                if(status === 'Выполнен') return 'background: #d4edda; color: #155724; border-color: #c3e6cb;';
+                if(status === 'Отменен') return 'background: #f8d7da; color: #721c24; border-color: #f5c6cb;';
+                return 'background: #e2e3e5; color: #383d41;';
+            };
 
             const loadAdminOrders = async () => {
                 try {
@@ -81,24 +138,21 @@
                     });
                     
                     if (res.status === 403) {
-                        alert('У вас нет прав администратора!');
-                        window.location.href = 'index.html'; // Выгоняем на главную
+                        showToast('У вас нет прав администратора', 'error');
+                        setTimeout(() => window.location.href = 'index.html', 1500);
                         return;
                     }
-                    if (!res.ok) {
-                        rowsContainer.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Ошибка доступа.</td></tr>`;
-                        return;
-                    }
+                    if (!res.ok) throw new Error('Ошибка сервера');
 
                     const orders = await res.json();
                     
                     if (orders.length === 0) {
-                        rowsContainer.innerHTML = `<tr><td colspan="6" style="text-align:center;">Заказов в базе данных пока нет.</td></tr>`;
+                        rowsContainer.innerHTML = `<tr><td colspan="6" style="text-align:center;">Заказов пока нет.</td></tr>`;
                         return;
                     }
 
                     rowsContainer.innerHTML = orders.map(order => `
-                        <tr>
+                        <tr class="order-row">
                             <td>
                                 <strong>#${order.id}</strong>
                                 <div style="color:#888; font-size:12px; margin-top:4px;">${order.date}</div>
@@ -112,49 +166,120 @@
                                     ${order.items.map(it => `<li>${it.name} (${it.weight}) — ${it.qty} шт.</li>`).join('')}
                                 </ul>
                             </td>
-                            <td style="max-width:250px; color:#555; font-size:13px; line-height:1.4;">
-                                ${order.address}
-                            </td>
-                            <td style="font-weight:700; color:var(--dark-bg);">
-                                ${order.total.toLocaleString('ru-RU')} ₽
-                            </td>
-                            <td>
-                                <select class="status-select" data-order-id="${order.id}">
+                            <td style="max-width:250px; color:#555; font-size:13px; line-height:1.4;">${order.address}</td>
+                            <td style="font-weight:700; color:var(--dark-bg);">${order.total.toLocaleString('ru-RU')} ₽</td>
+                            <td style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <select class="status-select" data-order-id="${order.id}" style="${getStatusStyle(order.status)}">
                                     <option value="В обработке" ${order.status === 'В обработке' ? 'selected' : ''}>В обработке</option>
                                     <option value="Отправлен СДЭК" ${order.status === 'Отправлен СДЭК' ? 'selected' : ''}>Отправлен СДЭК</option>
                                     <option value="Выполнен" ${order.status === 'Выполнен' ? 'selected' : ''}>Выполнен</option>
+                                    <option value="Отменен" ${order.status === 'Отменен' ? 'selected' : ''}>Отменен</option>
                                 </select>
+                                <button class="action-btn delete-btn" data-order-id="${order.id}">Удалить</button>
                             </td>
                         </tr>
                     `).join('');
 
-                    document.querySelectorAll('.status-select').forEach(select => {
-                        select.addEventListener('change', async (e) => {
-                            const orderId = e.target.dataset.orderId;
-                            const newStatus = e.target.value;
-
-                            try {
-                                const updateRes = await fetch(`${API_URL}/admin/orders/${orderId}/status`, {
-                                    method: 'PUT',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${token}`
-                                    },
-                                    body: JSON.stringify({ status: newStatus })
-                                });
-
-                                if (!updateRes.ok) {
-                                    if(updateRes.status === 403) alert('У вас нет прав для изменения статуса.');
-                                    else alert('Не удалось обновить статус на сервере.');
-                                }
-                            } catch (err) { alert('Ошибка соединения с бэкендом.'); }
-                        });
-                    });
-
+                    attachEventListeners();
                 } catch (e) {
                     rowsContainer.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Ошибка соединения с сервером.</td></tr>`;
                 }
             };
+
+            let currentOrderIdToDelete = null;
+            const confirmModal = document.getElementById('deleteConfirmModal');
+            const cancelBtn = document.getElementById('cancelDeleteBtn');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+            cancelBtn.addEventListener('click', () => {
+                confirmModal.classList.remove('active');
+                currentOrderIdToDelete = null;
+            });
+
+            confirmBtn.addEventListener('click', async () => {
+                if (!currentOrderIdToDelete) return;
+                
+                confirmModal.classList.remove('active'); 
+                
+                try {
+                    const res = await fetch(`${API_URL}/admin/orders/${currentOrderIdToDelete}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        showToast('Заказ успешно удален', 'success');
+                        loadAdminOrders();
+                    } else {
+                        showToast('Ошибка при удалении', 'error');
+                    }
+                } catch(err) { 
+                    showToast('Ошибка сети', 'error'); 
+                } finally {
+                    currentOrderIdToDelete = null; 
+                }
+            });
+
+            const attachEventListeners = () => {
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', async (e) => {
+                        const orderId = e.target.dataset.orderId;
+                        const newStatus = e.target.value;
+
+                        try {
+                            const res = await fetch(`${API_URL}/admin/orders/${orderId}/status`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                body: JSON.stringify({ status: newStatus })
+                            });
+
+                            if (res.ok) {
+                                e.target.style = getStatusStyle(newStatus);
+                                showToast(`Статус заказа #${orderId} изменен`, 'success');
+                            } else {
+                                showToast('Ошибка при обновлении статуса', 'error');
+                            }
+                        } catch (err) { showToast('Ошибка соединения с сервером', 'error'); }
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        currentOrderIdToDelete = e.target.dataset.orderId;
+                        confirmModal.classList.add('active'); 
+                    });
+                });
+            };
+
+            document.getElementById('searchOrderInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('.order-row').forEach(row => {
+                    const textContent = row.innerText.toLowerCase();
+                    row.style.display = textContent.includes(term) ? '' : 'none';
+                });
+            });
+
+            document.getElementById('exportCsvBtn').addEventListener('click', async () => {
+                try {
+                    showToast('Формируем файл...', 'info');
+                    const res = await fetch(`${API_URL}/admin/orders/export`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (res.ok) {
+                        const blob = await res.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `divnomed_orders_${new Date().toISOString().slice(0,10)}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        showToast('База заказов успешно выгружена!', 'success');
+                    } else {
+                        showToast('Ошибка сервера: проверьте терминал FastAPI', 'error');
+                    }
+                } catch(err) { showToast('Ошибка сети при выгрузке', 'error'); }
+            });
 
             loadAdminOrders();
         });

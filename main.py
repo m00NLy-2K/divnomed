@@ -1,3 +1,6 @@
+from fastapi.responses import StreamingResponse
+import io
+import csv
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -8,6 +11,7 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 import requests
+import uuid
 
 
 # --- НАСТРОЙКИ ---
@@ -171,6 +175,54 @@ def update_profile(profile_data: UserProfileUpdate, current_user: UserDB = Depen
     current_user.address = profile_data.address
     db.commit()
     return {"message": "Профиль обновлен"}
+# Временное хранилище для токенов сброса пароля (в реальном проекте хранится в БД)
+reset_tokens = {}
+
+# Эндпоинт 1: Запрос на сброс
+@app.post("/api/forgot-password")
+def forgot_password(data: dict):
+    email = data.get("email")
+    # Здесь в идеале нужно проверить, есть ли такой email в БД
+    
+    # Генерируем уникальный токен
+    token = str(uuid.uuid4())
+    reset_tokens[token] = email
+    
+    # ИМИТАЦИЯ ОТПРАВКИ ПИСЬМА (выводим в консоль VS Code)
+    reset_link = f"http://127.0.0.1:5500/reset-password.html?token={token}"
+    print(f"\n[EMAIL ИМИТАЦИЯ] Письмо отправлено на {email}")
+    print(f"Ссылка для сброса: {reset_link}\n")
+    
+    return {"message": "Если такой email существует, мы отправили на него ссылку для сброса."}
+
+# Эндпоинт 2: Сохранение нового пароля
+@app.post("/api/reset-password")
+def reset_password(data: dict, db: Session = Depends(get_db)): # <-- Добавили подключение к БД
+    token = data.get("token")
+    new_password = data.get("new_password")
+    
+    if token not in reset_tokens:
+        return {"error": "Неверный или устаревший токен ссылки."}
+        
+    email = reset_tokens[token]
+    
+    # 1. Находим пользователя в базе
+    user = db.query(UserDB).filter(UserDB.email == email).first()
+    if not user:
+        return {"error": "Пользователь не найден."}
+        
+    # 2. Хешируем новый пароль
+    salt = bcrypt.gensalt()
+    hashed_pwd = bcrypt.hashpw(new_password.encode('utf-8'), salt).decode('utf-8')
+    
+    # 3. Сохраняем новый пароль в базу
+    user.hashed_password = hashed_pwd
+    db.commit()
+    
+    # 4. Удаляем токен, чтобы его нельзя было использовать дважды
+    del reset_tokens[token]
+    
+    return {"message": "Пароль успешно изменен!"}
 
 # --- МАРШРУТЫ (ЗАКАЗЫ И АДМИНКА) ---
 
@@ -239,3 +291,49 @@ def mock_delivery(data: dict):
         "pvz_address": "Москва, ул. Ленина, 10",
         "status": "success"
     }
+# --- НОВЫЕ АДМИНСКИЕ МАРШРУТЫ (УДАЛЕНИЕ И ЭКСПОРТ) ---
+
+@app.delete("/api/admin/orders/{order_id}")
+def admin_delete_order(order_id: int, current_user: UserDB = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Доступ запрещен.")
+        
+    order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказ не найден")
+    
+    # Удаляем товары заказа и сам заказ
+    db.query(OrderItemDB).filter(OrderItemDB.order_id == order_id).delete()
+    db.delete(order)
+    db.commit()
+    
+    return {"message": "Заказ успешно удален"}
+
+@app.get("/api/admin/orders/export")
+def admin_export_orders(current_user: UserDB = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Доступ запрещен.")
+    
+    orders = db.query(OrderDB).order_by(OrderDB.id.desc()).all()
+    
+    # Создаем CSV в памяти
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=';') # Точка с запятой нужна для корректного открытия в русском Excel
+    writer.writerow(["ID Заказа", "Клиент", "Телефон", "Адрес", "Дата", "Сумма", "Статус", "Товары"])
+    
+    for o in orders:
+        items = db.query(OrderItemDB).filter(OrderItemDB.order_id == o.id).all()
+        user = db.query(UserDB).filter(UserDB.id == o.user_id).first()
+        customer_name = user.name if user else "Удаленный пользователь"
+        items_str = ", ".join([f"{i.name} ({i.weight}) - {i.qty} шт." for i in items])
+        
+        writer.writerow([o.id, customer_name, o.phone, o.address, o.created_at, o.total_price, o.status, items_str])
+    
+    output.seek(0)
+    
+    # Отдаем файл в кодировке UTF-8 с BOM (чтобы Excel правильно читал русские буквы)
+    return StreamingResponse(
+        iter([output.getvalue().encode('utf-8-sig')]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=divnomed_orders.csv"}
+    )

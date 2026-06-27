@@ -1,8 +1,27 @@
+// Глобальная функция для вывода красивых уведомлений (Toasts)
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerText = message;
+    container.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
 document.addEventListener('DOMContentLoaded', () => {
 
     const formatPrice = (value) => `${value.toLocaleString('ru-RU')} ₽`;
     const API_URL = 'http://127.0.0.1:8000/api';
-
     // ============================================================
     // 1. МОДЕЛЬ ИЗБРАННОГО (LOCALSTORAGE)
     // ============================================================
@@ -347,16 +366,29 @@ document.addEventListener('DOMContentLoaded', () => {
         checkoutForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const items = Cart.read();
-            if (items.length === 0) return alert('Корзина пуста.');
+            if (items.length === 0) return showToast('Корзина пуста.','success');
 
             const token = localStorage.getItem('divno_auth_token');
             if (!token) {
-                alert('Пожалуйста, войдите в аккаунт или зарегистрируйтесь для оформления заказа.');
+                showToast('Пожалуйста, войдите в аккаунт или зарегистрируйтесь для оформления заказа.', 'success');
                 window.location.href = 'login.html';
                 return;
             }
 
             const phone = document.getElementById('checkoutPhone').value;
+            
+            // === ЖЕЛЕЗОБЕТОННАЯ ПРОВЕРКА НОМЕРА ===
+            // Метод replace(/\D/g, '') удаляет все нечисловые символы (+, пробелы, скобки, тире).
+            // Оставшаяся строка содержит только цифры.
+            const digitsOnly = phone.replace(/\D/g, '');
+            
+            // Полный российский номер телефона всегда содержит 11 цифр (например, 79991234567)
+            if (digitsOnly.length !== 11) {
+                showToast('Пожалуйста, введите номер телефона полностью (10 цифр после +7)', 'error');
+                return; // Полностью останавливаем выполнение функции, fetch не сработает
+            }
+            // =====================================
+
             const address = document.getElementById('checkoutAddress').value;
             const subtotal = Cart.totalPrice(items);
             const delivery = subtotal >= 3000 ? 0 : currentDeliveryCost;
@@ -370,14 +402,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    alert('Заказ успешно оформлен! Вы можете отслеживать его в Личном кабинете.');
+                    showToast('Заказ успешно оформлен! Вы можете отслеживать его в Личном кабинете.', 'success');
                     Cart.clear();
                     window.location.href = 'profile.html';
                 } else {
                     const data = await response.json();
-                    alert('Ошибка: ' + data.detail);
+                    showToast('Ошибка: ' + data.detail,'error');
                 }
-            } catch (err) { alert('Ошибка соединения с сервером.'); }
+            } catch (err) { showToast('Ошибка соединения с сервером.', 'error'); }
         });
     }
 
@@ -413,9 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('divno_auth_token', data.access_token); 
                     window.location.href = 'profile.html'; 
                 } else { 
-                    alert('Ошибка: ' + data.detail); 
+                    showToast('Ошибка: ' + data.detail, 'error'); 
                 }
-            } catch (err) { alert('Ошибка соединения с сервером'); }
+            } catch (err) { showToast('Ошибка соединения с сервером', 'success'); }
         });
     }
 
@@ -438,9 +470,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('divno_auth_token', data.access_token); 
                     window.location.href = 'profile.html'; 
                 } else { 
-                    alert('Ошибка: ' + data.detail); 
+                    showToast('Ошибка: ' + data.detail, 'success'); 
                 }
-            } catch (err) { alert('Ошибка соединения с сервером'); }
+            } catch (err) { showToast('Ошибка соединения с сервером', 'error'); }
         });
     }
 
@@ -473,6 +505,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('divno_auth_token');
             const name = document.getElementById('profileNameInput').value;
             const phone = document.getElementById('profilePhoneInput').value;
+            
+            // === ЖЕЛЕЗОБЕТОННАЯ ПРОВЕРКА НОМЕРА ===
+            const digitsOnly = phone.replace(/\D/g, '');
+            if (digitsOnly.length !== 11) {
+                showToast('Пожалуйста, введите номер телефона полностью (10 цифр после +7)', 'error');
+                return; // Останавливаем сохранение
+            }
+            // =====================================
+
             const address = document.getElementById('profileAddressInput').value;
 
             try {
@@ -482,10 +523,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ name, phone, address })
                 });
                 if (res.ok) {
-                    alert('Данные успешно сохранены!');
+                    showToast('Данные успешно сохранены!', 'success');
                     document.getElementById('profileNameDisplay').textContent = name;
                 }
-            } catch (e) { alert('Ошибка соединения с сервером'); }
+            } catch (e) { showToast('Ошибка соединения с сервером', 'error'); }
         });
     }
 
