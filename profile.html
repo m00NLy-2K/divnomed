@@ -76,7 +76,15 @@
                     <label style="display:block; font-size: 12px; font-weight: 600; margin-bottom: 5px;">Имя</label>
                     <input type="text" id="profileNameInput" class="form-control" style="padding: 10px; font-size: 14px;">
                 </div>
-                
+                <div style="background: #fffcf2; border: 1px solid #f3ebe3; border-left: 4px solid var(--primary-color); padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h4 class="serif-font" style="font-size: 20px; margin-bottom: 5px; color: var(--dark-bg);">Ваша программа лояльности</h4>
+                        <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Общая сумма выкупленных заказов: <strong id="profileTotalSpent" style="color: var(--text-main);">0 ₽</strong></p>
+                    </div>
+                    <div style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 16px;">
+                        Скидка: <span id="profileLoyaltyDiscount">0%</span>
+                    </div>
+                </div>
                 <div style="margin-bottom: 15px;">
                     <label style="display:block; font-size: 12px; font-weight: 600; margin-bottom: 5px;">Телефон</label>
                     <input type="tel" id="profilePhoneInput" class="form-control" style="padding: 10px; font-size: 14px;">

@@ -332,15 +332,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const updateSummary = () => {
             const subtotal = Cart.totalPrice(items);
             
-            // Расчет скидки
-            let discountPercent = 0;
-            if (subtotal >= 30000) discountPercent = 15;
-            else if (subtotal >= 20000) discountPercent = 10;
-            else if (subtotal >= 10000) discountPercent = 7;
-            else if (subtotal >= 5000) discountPercent = 5;
+            // === УМНЫЙ РАСЧЕТ СКИДКИ (ВЫБОР МАКСИМАЛЬНОЙ) ===
+            let instantDiscount = 0;
+            if (subtotal >= 30000) instantDiscount = 15;
+            else if (subtotal >= 20000) instantDiscount = 10;
+            else if (subtotal >= 10000) instantDiscount = 7;
+            else if (subtotal >= 5000) instantDiscount = 5;
+
+            // Забираем накопительную скидку или ставим 0, если гость
+            const loyaltyDiscount = window.userLoyaltyDiscount || 0;
+            
+            // Выбираем бОльшую из двух скидок!
+            const discountPercent = Math.max(instantDiscount, loyaltyDiscount); 
 
             const discountAmount = Math.floor(subtotal * (discountPercent / 100));
             const subtotalWithDiscount = subtotal - discountAmount;
+            // ==================================================
+
             const delivery = subtotalWithDiscount >= 3000 ? 0 : currentDeliveryCost;
             const total = subtotalWithDiscount + delivery;
 
@@ -453,15 +461,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`${API_URL}/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
             if (res.ok) {
                 const data = await res.json();
+                
+                // СОХРАНЯЕМ НАКОПИТЕЛЬНУЮ СКИДКУ В ПАМЯТЬ БРАУЗЕРА
+                window.userLoyaltyDiscount = data.loyalty_discount || 0;
+                
+                // Выводим данные профиля
                 if (document.getElementById('profileNameDisplay')) document.getElementById('profileNameDisplay').textContent = data.name;
                 if (document.getElementById('profileEmailText')) document.getElementById('profileEmailText').textContent = data.email;
                 if (document.getElementById('profileNameInput')) document.getElementById('profileNameInput').value = data.name;
                 if (document.getElementById('profilePhoneInput')) document.getElementById('profilePhoneInput').value = data.phone;
                 if (document.getElementById('profileAddressInput')) document.getElementById('profileAddressInput').value = data.address;
                 
+                // Выводим данные программы лояльности
+                if (document.getElementById('profileLoyaltyDiscount')) document.getElementById('profileLoyaltyDiscount').textContent = `${data.loyalty_discount || 0}%`;
+                if (document.getElementById('profileTotalSpent')) document.getElementById('profileTotalSpent').textContent = formatPrice(data.total_spent || 0);
+                
                 if (document.getElementById('checkoutName') && data.name) document.getElementById('checkoutName').value = data.name;
                 if (document.getElementById('checkoutPhone') && data.phone) document.getElementById('checkoutPhone').value = data.phone;
                 if (document.getElementById('checkoutAddress') && data.address) document.getElementById('checkoutAddress').value = data.address;
+
+                // Пересчитываем корзину с учетом новой скидки
+                Cart.notify(); 
             }
         } catch (e) { console.error('Ошибка загрузки профиля'); }
     };
@@ -574,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Останавливаем перезагрузку страницы!
+            e.preventDefault(); 
             
             const items = Cart.read();
             if (items.length === 0) return showToast('Корзина пуста.','error');
@@ -587,37 +607,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const phone = document.getElementById('checkoutPhone').value;
+            const address = document.getElementById('checkoutAddress').value;
             
-            // === ЖЕЛЕЗОБЕТОННАЯ ПРОВЕРКА НОМЕРА ===
             const digitsOnly = phone.replace(/\D/g, '');
             if (digitsOnly.length !== 11) {
                 showToast('Пожалуйста, введите номер телефона полностью (10 цифр после +7)', 'error');
                 return; 
             }
-            // =====================================
-
-            const address = document.getElementById('checkoutAddress').value;
             
-            // === РАСЧЕТ С УЧЕТОМ НОВЫХ СКИДОК ===
+            // === РАСЧЕТ С УЧЕТОМ НОВЫХ СКИДОК ПЕРЕД ОТПРАВКОЙ ===
             const subtotal = Cart.totalPrice(items);
             
-            let discountPercent = 0;
-            if (subtotal >= 30000) discountPercent = 15;
-            else if (subtotal >= 20000) discountPercent = 10;
-            else if (subtotal >= 10000) discountPercent = 7;
-            else if (subtotal >= 5000) discountPercent = 5;
+            let instantDiscount = 0;
+            if (subtotal >= 30000) instantDiscount = 15;
+            else if (subtotal >= 20000) instantDiscount = 10;
+            else if (subtotal >= 10000) instantDiscount = 7;
+            else if (subtotal >= 5000) instantDiscount = 5;
+
+            const loyaltyDiscount = window.userLoyaltyDiscount || 0;
+            const discountPercent = Math.max(instantDiscount, loyaltyDiscount);
             
             const discountAmount = Math.floor(subtotal * (discountPercent / 100));
             const subtotalWithDiscount = subtotal - discountAmount;
             
-            // Доставка (считается от суммы УЖЕ СО СКИДКОЙ)
             let delivery = subtotalWithDiscount >= 3000 ? 0 : (typeof currentDeliveryCost !== 'undefined' ? currentDeliveryCost : 350);
-            
-            // Итоговая сумма, которая уйдет в базу данных
             const total = subtotalWithDiscount + delivery;
 
             // === ВШИВАЕМ ПОДАРОК В ФИНАЛЬНЫЙ ЧЕК ===
-            const finalItems = [...items]; // Делаем копию корзины для отправки на сервер
+            const finalItems = [...items]; 
             const halfLiterCount = finalItems.filter(it => it.weight === '0.5 л' || it.weight === '500 г').reduce((sum, it) => sum + it.qty, 0);
             
             if (halfLiterCount >= 3) {
@@ -629,11 +646,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     qty: 1
                 });
             }
-            // ========================================
 
             try {
-                // Блокируем кнопку, чтобы не нажали дважды
-                // Блокируем кнопку, чтобы не нажали дважды
                 const submitBtn = checkoutForm.querySelector('button[type="submit"]');
                 if (submitBtn) {
                     submitBtn.disabled = true;
@@ -643,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`${API_URL}/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ phone, address, total_price: total, items: finalItems }) // <-- ВОТ ЗДЕСЬ ИЗМЕНЕНИЕ
+                    body: JSON.stringify({ phone, address, total_price: total, items: finalItems }) 
                 });
 
                 if (response.ok) {
